@@ -5,13 +5,13 @@ const ASSETS = [
   "./manifest.webmanifest"
 ];
 
+// Installation → met tout ça en cache
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
   self.skipWaiting();
 });
 
+// Activation → supprime les vieux caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -21,6 +21,7 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Récupération des fichiers → réseau d'abord, cache si hors-ligne
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
