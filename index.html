@@ -13,407 +13,228 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
-  :root{
-    /* Couleurs SFW (alternance rose/bleu) */
-    --rose:#ff5ca8; --bleu:#3fa7ff;
-    --segA:#ff5ca8; --segB:#3fa7ff;
+:root {
+  --rose:#ff5ca8; --bleu:#3fa7ff;
+  --segA:#ff5ca8; --segB:#3fa7ff;
+  --nsfwA:#ff2740; --nsfwB:#300000;
+  --text:#eef2ff; --muted:#9aa3b2; --ring:rgba(255,255,255,.12);
+  --bg:#0b0f1a; --glow1:#1e2746; --glow2:#242a4a; --accent:#ffd166;
+}
+.nsfw-on {
+  --bg:#0a0a0d; --glow1:#3b0d14; --glow2:#160b0e; --accent:#ff2740;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body {
+  margin:0; font-family:-apple-system,Inter,Roboto,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 800px at 80% -10%, var(--glow1) 0%, transparent 60%),
+    radial-gradient(900px 600px at 0% 100%, var(--glow2) 0%, transparent 55%),
+    var(--bg);
+  transition: background .4s ease;
+}
+.wrap { width:min(980px,100%); margin:auto; padding:12px }
+.card {
+  text-align:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+  border:1px solid var(--ring); border-radius:18px;
+  padding:clamp(12px,2.8vw,18px);
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+h1 {
+  margin:0 0 8px; font-weight:900; letter-spacing:.2px; line-height:1.15;
+  font-size:clamp(22px,4.8vw,32px);
+  background:linear-gradient(90deg,var(--bleu),var(--rose));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.nsfw-on h1{animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{
+  0%,100%{filter:drop-shadow(0 0 0 rgba(255,39,64,0))}
+  50%{filter:drop-shadow(0 0 18px rgba(255,39,64,.32))}
+}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+button{
+  appearance:none;border:1px solid var(--ring);background:#12162a;color:var(--text);
+  border-radius:14px;padding:12px 16px;font-weight:700;font-size:clamp(14px,3.8vw,16px);
+  min-width:120px;cursor:pointer
+}
+.primary{background:linear-gradient(135deg,var(--bleu),var(--rose));color:#0b0b0f;border:none}
+.nsfw-on .primary{background:linear-gradient(135deg,#ff2740,#b80f2d);color:#0b0b0f}
 
-    /* Couleurs NSFW (alternance rouge/rouge-foncé) */
-    --nsfwA:#ff2740; --nsfwB:#0e0c10;
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(12px,3.2vw,14px)}
+.swatch{width:14px;height:14px;border-radius:50%}
+.muted{color:var(--muted)}
 
-    /* UI */
-    --text:#eef2ff; --muted:#9aa3b2; --ring:rgba(255,255,255,.12);
-    --bg:#0b0f1a; --glow1:#1e2746; --glow2:#242a4a; --accent:#ffd166;
-  }
-  .nsfw-on{
-    --bg:#0a0a0d; --glow1:#3b0d14; --glow2:#160b0e; --accent:#ff2740;
-  }
+/* Switch NSFW */
+.switch{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 2px}
+.switch .lab{font-weight:700}
+.toggle{position:relative;width:56px;height:30px;border-radius:30px;background:#2a2f45;border:1px solid var(--ring);cursor:pointer;transition:.2s}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:.22s}
+.toggle.on{background:#ff2740;border-color:#ff2740}
+.toggle.on::after{transform:translateX(26px)}
 
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{
-    margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,Roboto,Arial,sans-serif;
-    color:var(--text);
-    background:
-      radial-gradient(1200px 800px at 80% -10%, var(--glow1) 0%, rgba(30,39,70,0) 60%),
-      radial-gradient(900px 600px at 0% 100%, var(--glow2) 0%, rgba(36,42,74,0) 55%),
-      var(--bg);
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left);
-    transition: background 400ms ease;
-  }
+.wheel-box{display:grid;place-items:center;position:relative}
+.pointer{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid var(--accent);margin:2px 0 -8px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+svg{width:min(86vw,560px);height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.4));touch-action:manipulation}
 
-  .wrap{width:min(980px,100%);margin:0 auto;padding:12px}
-  .card{
-    text-align:center;
-    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-    border:1px solid var(--ring); border-radius:18px; padding:clamp(12px,2.8vw,18px);
-    box-shadow:0 10px 30px rgba(0,0,0,.35)
-  }
+#spin {transform-box: fill-box; transform-origin: 0px 0px;} /* centrage SVG iPhone */
+#wheelSvg { text-rendering: optimizeLegibility; }
 
-  h1{
-    margin:0 0 8px; font-weight:900; letter-spacing:.2px; line-height:1.15;
-    font-size:clamp(22px,4.8vw,32px);
-    background: linear-gradient(90deg, var(--bleu), var(--rose));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  .nsfw-on h1{ animation:pulse 2.6s ease-in-out infinite }
-  @keyframes pulse{0%,100%{filter:drop-shadow(0 0 0 rgba(255,39,64,0))}50%{filter:drop-shadow(0 0 18px rgba(255,39,64,.32))}}
+/* Flammes et hub */
+@keyframes flameFlicker{0%{opacity:.6;transform:scale(1)}50%{opacity:.9;transform:scale(1.02)}100%{opacity:.7;transform:scale(1)}}
+@keyframes hubPulse{0%,100%{opacity:.5;filter:blur(22px)}50%{opacity:.9;filter:blur(28px)}}
 
-  .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
-  button{
-    appearance:none;border:1px solid var(--ring);background:#12162a;color:var(--text);
-    border-radius:14px;padding:12px 16px;font-weight:700;font-size:clamp(14px,3.8vw,16px);min-width:120px;cursor:pointer
-  }
-  .primary{background:linear-gradient(135deg, var(--bleu), var(--rose)); color:#0b0b0f; border:none}
-  .nsfw-on .primary{ background:linear-gradient(135deg, #ff2740, #b80f2d); color:#0b0b0f; }
-
-  .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(12px,3.2vw,14px)}
-  .swatch{width:14px;height:14px;border-radius:50%}
-  .muted{color:var(--muted)}
-
-  .switch{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 2px}
-  .switch .lab{font-weight:700}
-  .toggle{position:relative;width:56px;height:30px;border-radius:30px;background:#2a2f45;border:1px solid var(--ring);cursor:pointer;transition:.2s}
-  .toggle::after{content:"";position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:.22s}
-  .toggle.on{background:#ff2740;border-color:#ff2740}
-  .toggle.on::after{transform:translateX(26px)}
-
-  .wheel-box{display:grid;place-items:center;position:relative}
-  .pointer{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid var(--accent);margin:2px 0 -8px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
-  svg{width:min(86vw,560px);height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.4));touch-action:manipulation}
-
-  .result{margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,16px);display:none}
-  .timer{display:none;margin-top:8px;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-  .timer .display{font-variant-numeric:tabular-nums;font-weight:800;padding:6px 10px;border-radius:10px;border:1px solid var(--ring);background:rgba(255,255,255,.06)}
-  select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-radius:10px;padding:10px 12px}
-
-  /* Flammes et hub (NSFW) */
-  @keyframes flameFlicker {0%{opacity:.65;transform:scale(1)}50%{opacity:.9;transform:scale(1.025)}100%{opacity:.7;transform:scale(1)}}
-  @keyframes hubPulse {0%,100%{opacity:.5;filter:blur(22px)}50%{opacity:.85;filter:blur(28px)}}
-
-  /* Améliore le rendu texte SVG sur iOS */
-  #wheelSvg { text-rendering: optimizeLegibility; }
+/* Chrono */
+.timer{display:none;margin-top:8px;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.timer .display{font-variant-numeric:tabular-nums;font-weight:800;padding:6px 10px;border-radius:10px;border:1px solid var(--ring);background:rgba(255,255,255,.06)}
+select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-radius:10px;padding:10px 12px}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="card">
-      <h1>Massage barrel</h1>
+<div class="wrap">
+  <section class="card">
+    <h1>Massage barrel</h1>
 
-      <!-- Switch NSFW -->
-      <div class="switch">
-        <span class="lab muted">NSFW</span>
-        <div id="nsfwToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
-      </div>
+    <div class="switch">
+      <span class="lab muted">NSFW</span>
+      <div id="nsfwToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
+    </div>
 
-      <div class="wheel-box">
-        <div class="pointer" aria-hidden="true"></div>
+    <div class="wheel-box">
+      <div class="pointer"></div>
 
-        <!--
-          IMPORTANT : on ne tourne plus le <svg> entier.
-          On tourne UNIQUEMENT le groupe <g id="spin"> (Safari bugfix).
-        -->
-        <svg id="wheelSvg" viewBox="-500 -500 1000 1000" aria-label="Roue de massage">
-          <defs id="defs">
-            <!-- Dégradé flammes -->
-            <radialGradient id="flameGrad" cx="50%" cy="50%" r="55%">
-              <stop offset="0%"  stop-color="#ff6a00" stop-opacity="0.85"/>
-              <stop offset="45%" stop-color="#ff2b2b" stop-opacity="0.55"/>
-              <stop offset="85%" stop-color="#000"    stop-opacity="0"/>
-            </radialGradient>
-            <!-- Dégradé hub -->
-            <radialGradient id="hubGrad" cx="50%" cy="50%" r="60%">
-              <stop offset="0%"  stop-color="#ff2740" stop-opacity="0.95"/>
-              <stop offset="65%" stop-color="#7a0f1f" stop-opacity="0.95"/>
-              <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
-            </radialGradient>
-          </defs>
+      <!-- SVG roue -->
+      <svg id="wheelSvg" viewBox="-500 -500 1000 1000">
+        <defs>
+          <radialGradient id="flameGrad" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#ff6a00" stop-opacity="0.85"/>
+            <stop offset="45%" stop-color="#ff2b2b" stop-opacity="0.55"/>
+            <stop offset="85%" stop-color="#000" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="hubGrad" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#ff2740" stop-opacity="0.95"/>
+            <stop offset="65%" stop-color="#7a0f1f" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="1"/>
+          </radialGradient>
+        </defs>
 
-          <!-- Groupe rotatif : flammes + segments + textes + hub -->
-          <g id="spin">
-            <!-- Flammes (visibles seulement en NSFW) -->
-            <g id="flames" style="display:none">
-              <circle r="455" fill="url(#flameGrad)" style="animation: flameFlicker 2.2s infinite ease-in-out"></circle>
-              <g opacity="0.55" style="animation: flameFlicker 2.8s infinite ease-in-out .2s">
-                <ellipse rx="380" ry="70" transform="rotate(-20)" fill="url(#flameGrad)"></ellipse>
-                <ellipse rx="360" ry="58" transform="rotate(14)"  fill="url(#flameGrad)"></ellipse>
-                <ellipse rx="340" ry="52" transform="rotate(42)"  fill="url(#flameGrad)"></ellipse>
-              </g>
-            </g>
-
-            <!-- Tranches + textes -->
-            <g id="wheelGroup"></g>
-
-            <!-- Hub coquin sans texte -->
-            <g id="hub">
-              <circle r="140" fill="url(#hubGrad)"></circle>
-              <circle r="170" fill="#ff2740" opacity=".6" style="filter:blur(24px); animation: hubPulse 2.8s infinite ease-in-out"></circle>
-            </g>
+        <!-- Le groupe qu’on fait tourner -->
+        <g id="spin" transform="translate(0,0)">
+          <g id="flames" style="display:none">
+            <circle r="455" fill="url(#flameGrad)" style="animation:flameFlicker 2s infinite"></circle>
           </g>
-        </svg>
+          <g id="wheelGroup"></g>
+          <g id="hub">
+            <circle r="140" fill="url(#hubGrad)"></circle>
+            <circle r="170" fill="#ff2740" opacity=".6" style="filter:blur(24px);animation:hubPulse 3s infinite"></circle>
+          </g>
+        </g>
+      </svg>
 
-        <div class="controls">
-          <button id="spinBtn" class="primary">🎡 Lancer</button>
-          <button id="reset">↺ Réinitialiser</button>
-        </div>
-
-        <!-- Légende : SFW = qui masse ; NSFW = palette des segments -->
-        <div id="legend" class="controls" style="margin-top:2px"></div>
-
-        <!-- Résultat -->
-        <div id="out" class="result"></div>
-
-        <!-- Chrono -->
-        <div class="timer" id="timerRow">
-          <label class="muted">Durée
-            <select id="dur">
-              <option value="120">2 min</option>
-              <option value="180">3 min</option>
-              <option value="300" selected>5 min</option>
-              <option value="600">10 min</option>
-            </select>
-          </label>
-          <span class="display" id="tdisp">05:00</span>
-          <button id="tstart" class="primary">▶︎ Démarrer</button>
-          <button id="tstop">■ Stop</button>
-          <label class="muted" style="display:flex;gap:6px;align-items:center">
-            <input type="checkbox" id="autoStart" checked> Auto au tirage
-          </label>
-        </div>
+      <div class="controls">
+        <button id="spinBtn" class="primary">🎡 Lancer</button>
+        <button id="reset">↺ Réinitialiser</button>
       </div>
-    </section>
-  </div>
+
+      <div id="legend" class="controls"></div>
+      <div id="out" class="result"></div>
+
+      <!-- Chrono -->
+      <div class="timer" id="timerRow">
+        <label class="muted">Durée
+          <select id="dur">
+            <option value="120">2 min</option>
+            <option value="180">3 min</option>
+            <option value="300" selected>5 min</option>
+            <option value="600">10 min</option>
+          </select>
+        </label>
+        <span class="display" id="tdisp">05:00</span>
+        <button id="tstart" class="primary">▶︎ Démarrer</button>
+        <button id="tstop">■ Stop</button>
+        <label class="muted"><input type="checkbox" id="autoStart" checked> Auto au tirage</label>
+      </div>
+    </div>
+  </section>
+</div>
 
 <script>
-/* =========================
-   JS — version corrigée
-   ========================= */
+/* ===================================
+   JavaScript principal (commenté)
+   =================================== */
 (function(){
-  const NAME_BLUE = "Baptistou";
-  const NAME_ROSE = "Julitou";
-
-  // SFW (fixe)
-  const LIST_SFW = ["Épaules","Nuque","Dos","Bras","Mains","Pieds","Jambes","Visage","Tête","Mollets","Cuisses"];
-
-  // NSFW (8 éléments, avec tags H/F optionnels)
-  const LIST_NSFW_RAW = [
-    "Happy Ending",
-    "Lingam(H)",
-    "Cuni(F)",
-    "Levrette",
-    "Yoni(H)",
-    "Missionnaire",
-    "Anus(H)",
-    "Jouissance simultanée"
+  const NAME_BLUE="Baptistou", NAME_ROSE="Julitou";
+  const LIST_SFW=["Épaules","Nuque","Dos","Bras","Mains","Pieds","Jambes","Visage","Tête","Mollets","Cuisses"];
+  const LIST_NSFW_RAW=[
+    "Happy Ending","Lingam(H)","Cuni(F)","Levrette","Yoni(H)","Missionnaire","Anus(H)","Jouissance simultanée"
   ];
 
-  // PWA SW
-  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
-
-  // DOM
-  const svg    = document.getElementById('wheelSvg');
-  const spinG  = document.getElementById('spin');      // <- groupe qu’on fait tourner
-  const defs   = document.getElementById('defs');
-  const group  = document.getElementById('wheelGroup');
-  const flames = document.getElementById('flames');
-  const hub    = document.getElementById('hub');
-  const legend = document.getElementById('legend');
-  const out    = document.getElementById('out');
-  const nsfwToggle = document.getElementById('nsfwToggle');
-
-  const spinBtn = document.getElementById('spinBtn');
-  const resetBtn= document.getElementById('reset');
+  const spinG=document.getElementById("spin"),
+        group=document.getElementById("wheelGroup"),
+        flames=document.getElementById("flames"),
+        legend=document.getElementById("legend"),
+        out=document.getElementById("out"),
+        nsfwToggle=document.getElementById("nsfwToggle"),
+        spinBtn=document.getElementById("spinBtn"),
+        resetBtn=document.getElementById("reset");
 
   // Chrono
-  const timerRow = document.getElementById('timerRow');
-  const durSel = document.getElementById('dur');
-  const tdisp  = document.getElementById('tdisp');
-  const tstart = document.getElementById('tstart');
-  const tstop  = document.getElementById('tstop');
-  const autoStart = document.getElementById('autoStart');
+  const timerRow=document.getElementById("timerRow"),durSel=document.getElementById("dur"),
+        tdisp=document.getElementById("tdisp"),tstart=document.getElementById("tstart"),
+        tstop=document.getElementById("tstop"),autoStart=document.getElementById("autoStart");
 
-  // États
-  let nsfw=false, spinning=false, items=[];
+  let nsfw=false,spinning=false,items=[],timerId=null,remaining=300;
 
-  // Utilitaires
+  function parseNSFW(list){return list.map(s=>{const m=s.match(/\((H|F)\)$/i);return{label:s.replace(/\((H|F)\)$/i,"").trim(),tag:m?m[1].toUpperCase():null}})}
   function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
-  function el(name, attrs={}, text){ const e=document.createElementNS('http://www.w3.org/2000/svg', name); for(const k in attrs) e.setAttribute(k, attrs[k]); if(text!=null) e.textContent=text; return e; }
-  function sectorPath(cx,cy,r,a0,a1){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1); const large=((a1-a0)%(2*Math.PI)>Math.PI)?1:0; return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`; }
-  function arcPath(cx,cy,r,a0,a1){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1); const large=((a1-a0)%(2*Math.PI)>Math.PI)?1:0; return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`; }
-  function arcLength(pathEl){ try{ return pathEl.getTotalLength(); } catch{ return 0; } }
-  function sanitize(s){ return s.replace(/[\u0000-\u001F<>]/g,'').trim(); }
-  function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function el(n,a={},t){const e=document.createElementNS("http://www.w3.org/2000/svg",n);for(const k in a)e.setAttribute(k,a[k]);if(t)e.textContent=t;return e;}
+  function sector(cx,cy,r,a0,a1){const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),large=a1-a0>Math.PI?1:0;return`M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`;}
+  function arc(cx,cy,r,a0,a1){const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),large=a1-a0>Math.PI?1:0;return`M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;}
 
-  // Ajuste la taille + ellipse, et couleur en SFW/NSFW
-  function fitTextOnPath(textEl, textPathEl, arcEl, opts){
-    const {maxFs, minFs, color} = opts;
-    const avail = arcLength(arcEl) * 0.9;
-    let fs = maxFs;
-    textEl.setAttribute('font-size', fs);
-    textEl.setAttribute('fill', color);
-    textEl.setAttribute('font-weight', '800'); // plus lisible
-    // centrage fiable malgré les transforms
-    textPathEl.setAttribute('startOffset','50%');
-    textPathEl.setAttribute('text-anchor','middle');
-    const getLen = ()=> textEl.getComputedTextLength ? textEl.getComputedTextLength() : (textEl.textContent.length*fs*0.6);
-    while(getLen()>avail && fs>minFs){ fs--; textEl.setAttribute('font-size', fs); }
-    if (getLen()>avail){
-      let s = textPathEl.textContent;
-      while(s.length>2 && getLen()>avail){ s = s.slice(0,-1); textPathEl.textContent = s + '…'; }
-    }
-  }
+  function colorAt(i){return nsfw?(i%2?css("--nsfwB"):css("--nsfwA")):(i%2?css("--segA"):css("--segB"))}
+  function loadItems(){items=nsfw?parseNSFW(LIST_NSFW_RAW):LIST_SFW.map(l=>({label:l,tag:null}))}
 
-  // Couleur d’une tranche (alternance selon mode)
-  function colorAt(i){ return nsfw ? (i%2===0?css('--nsfwA'):css('--nsfwB')) : (i%2===0?css('--segB'):css('--segA')); }
-
-  // Parse la liste NSFW -> {label, tag}
-  function parseNSFW(list){
-    return list.map(s=>{
-      const m = s.match(/\((H|F)\)\s*$/i);
-      const tag = m ? m[1].toUpperCase() : null;
-      const label = m ? s.replace(/\((H|F)\)\s*$/i,'').trim() : s.trim();
-      return {label, tag};
-    });
-  }
-
-  // Charge items selon le mode
-  function loadItems(){ items = nsfw ? parseNSFW(LIST_NSFW_RAW) : LIST_SFW.map(l=>({label:l, tag:null})); }
-
-  // Construit la roue (flammes, segments, textes, hub)
   function buildWheel(){
-    loadItems();
-    group.innerHTML=''; // reset segments/textes
-
-    // flammes visibles uniquement en NSFW
-    flames.style.display = nsfw ? 'block' : 'none';
-
-    const n = items.length, R=480, Rt=300, sep='rgba(255,255,255,.2)';
-
+    loadItems();group.innerHTML="";flames.style.display=nsfw?"block":"none";
+    const n=items.length,R=480,Rt=300;
     for(let i=0;i<n;i++){
-      const a0=-Math.PI/2+i*(2*Math.PI/n), a1=-Math.PI/2+(i+1)*(2*Math.PI/n);
-
-      // 1) tranche
-      group.appendChild( el('path',{ d:sectorPath(0,0,R,a0,a1), fill:colorAt(i) }) );
-
-      // 2) séparateur
-      group.appendChild( el('line',{ x1:0,y1:0,x2:R*Math.cos(a0),y2:R*Math.sin(a0), stroke:sep,'stroke-width':2 }) );
-
-      // 3) arc texte
-      const arcId=`arc-${i}`;
-      const arc   = el('path',{ id:arcId, d:arcPath(0,0,Rt,a0+0.08, a1-0.08), fill:'none' });
-      defs.appendChild(arc);
-
-      // 4) texte courbe (blanc + plus grand en NSFW)
-      const txt = el('text',{ 'font-family':'-apple-system, Inter, Roboto, Arial' });
-      const tp  = el('textPath',{ href:`#${arcId}` }, sanitize(items[i].label));
-      txt.appendChild(tp); group.appendChild(txt);
-
-      fitTextOnPath(txt, tp, arc, {
-        maxFs: nsfw ? 28 : 22,
-        minFs: 11,
-        color: nsfw ? '#ffffff' : '#0b0b0f'
-      });
+      const a0=-Math.PI/2+i*(2*Math.PI/n),a1=-Math.PI/2+(i+1)*(2*Math.PI/n);
+      group.appendChild(el("path",{d:sector(0,0,R,a0,a1),fill:colorAt(i)}));
+      const arcId=`a${i}`,p=el("path",{id:arcId,d:arc(0,0,Rt,a0+0.08,a1-0.08),fill:"none"});group.appendChild(p);
+      const txt=el("text",{"font-size":nsfw?"26":"20","fill":nsfw?"#fff":"#0b0b0f","font-weight":"700","font-family":"Inter"});
+      const tp=el("textPath",{href:`#${arcId}`,"startOffset":"50%","text-anchor":"middle"},items[i].label);
+      txt.appendChild(tp);group.appendChild(txt);
     }
-    // dernier séparateur
-    const aEnd=-Math.PI/2+n*(2*Math.PI/n);
-    group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(aEnd),y2:R*Math.sin(aEnd),stroke:sep,'stroke-width':2}) );
-
-    // légende
-    legend.innerHTML = nsfw
-      ? `<span class="chip"><span class="swatch" style="background:var(--nsfwA)"></span> Rouge</span>
-         <span class="chip"><span class="swatch" style="background:var(--nsfwB)"></span> Rouge&nbsp;foncé</span>`
-      : `<span class="chip"><span class="swatch" style="background:var(--bleu)"></span> Bleu&nbsp;: <b>Baptistou</b></span>
-         <span class="chip"><span class="swatch" style="background:var(--rose)"></span> Rose&nbsp;: <b>Julitou</b></span>`;
+    legend.innerHTML=nsfw?
+      `<span class="chip"><span class="swatch" style="background:var(--nsfwA)"></span>Rouge</span>
+       <span class="chip"><span class="swatch" style="background:var(--nsfwB)"></span>Rouge foncé</span>`:
+      `<span class="chip"><span class="swatch" style="background:var(--bleu)"></span>Bleu : <b>Baptistou</b></span>
+       <span class="chip"><span class="swatch" style="background:var(--rose)"></span>Rose : <b>Julitou</b></span>`;
   }
 
-  // Tourne UNIQUEMENT le groupe #spin (bugfix iOS/Safari)
-  function setAngle(deg){
-    spinG.style.transform = `rotate(${deg}deg)`;
-    spinG.style.transformOrigin = '50% 50%';
-  }
+  function setAngle(d){spinG.style.transform=`rotate(${d}deg)`;spinG.style.transformOrigin="0px 0px";spinG.style.transformBox="fill-box";}
+  function showRes(i){const it=items[i];if(!nsfw){const isBlue=colorAt(i)===css("--segB");out.innerHTML=`<b>${isBlue?NAME_BLUE:NAME_ROSE}</b> masse <b>${it.label}</b>`}
+    else{const r=it.tag==="H"?NAME_BLUE:it.tag==="F"?NAME_ROSE:(Math.random()<.5?NAME_BLUE:NAME_ROSE);out.innerHTML=`🎲 <b>${it.label}</b> — Pour <b>${r}</b>`}out.style.display="block"}
 
-  // Affiche le résultat SFW (couleur -> qui masse)
-  function showResultSFW(idx){
-    const part = items[idx].label;
-    const col  = colorAt(idx);
-    const isBlue = col.toLowerCase() === css('--segB').toLowerCase();
-    out.style.display='block';
-    out.innerHTML = `<b>${isBlue ? "Baptistou" : "Julitou"}</b> masse <b>${escapeHtml(part)}</b> — `
-                  + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
-  }
-
-  // Affiche le résultat NSFW (tag -> receveur; sinon aléatoire)
-  function showResultNSFW(idx){
-    const it = items[idx];
-    const receiver = it.tag==='H' ? "Baptistou" : it.tag==='F' ? "Julitou" : (Math.random()<0.5?"Baptistou":"Julitou");
-    out.style.display='block';
-    out.innerHTML = `🎲 <b>${escapeHtml(it.label)}</b> — Pour&nbsp;<b>${receiver}</b>`;
-  }
-
-  // Spin
   function spin(){
-    if(spinning) return; spinning=true; out.style.display='none'; timerRow.style.display='flex';
-
-    const n=items.length, seg=360/n;
-    const idx=Math.floor(Math.random()*n);
-    const center = idx*seg + seg/2;
-    const turns  = 5 + Math.floor(Math.random()*3);
-    const final  = turns*360 + (360 - center);
-    const jitter = (Math.random()-0.5)*6;
-
-    spinG.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)';
-    void spinG.offsetWidth; setAngle(final + jitter);
-
-    const end=()=>{
-      spinG.removeEventListener('transitionend',end);
-      spinG.style.transition='transform .001s linear'; setAngle(final);
-      setTimeout(()=> spinG.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
-
-      if (!nsfw) showResultSFW(idx); else showResultNSFW(idx);
-      if (navigator.vibrate) navigator.vibrate(10);
-      if (document.getElementById('autoStart').checked) startTimer();
-
-      spinning=false;
-    };
-    spinG.addEventListener('transitionend', end);
+    if(spinning)return;spinning=true;out.style.display="none";timerRow.style.display="flex";
+    const n=items.length,seg=360/n,idx=Math.floor(Math.random()*n),center=idx*seg+seg/2,turns=5+Math.floor(Math.random()*3),final=turns*360+(360-center)+(Math.random()-0.5)*6;
+    spinG.style.transition="transform 5.2s cubic-bezier(.12,.65,.06,1)";void spinG.offsetWidth;setAngle(final);
+    spinG.addEventListener("transitionend",()=>{spinG.style.transition="";setAngle(final);showRes(idx);if(autoStart.checked)startTimer();spinning=false},{once:true});
   }
 
-  // Reset
-  function reset(){ setAngle(0); out.style.display='none'; stopTimer(); }
+  function reset(){setAngle(0);out.style.display="none";stopTimer()}
+  function readDur(){remaining=parseInt(durSel.value,10)||300;tdisp.textContent=format(remaining)}
+  function format(s){return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
+  function tick(){remaining--;tdisp.textContent=format(remaining);if(remaining<=0){stopTimer();if(navigator.vibrate)navigator.vibrate([20,40,20]);}}
+  function startTimer(){readDur();stopTimer();timerId=setInterval(tick,1000)}
+  function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}}
 
-  // Chrono
-  let timerId=null, remaining=300;
-  function format(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=(s%60).toString().padStart(2,'0'); return `${m}:${ss}`; }
-  function readDur(){ remaining=parseInt(durSel.value,10)||300; tdisp.textContent=format(remaining); }
-  function tick(){ remaining--; if(remaining<=0){ tdisp.textContent='00:00'; stopTimer(); chime(); if(navigator.vibrate) navigator.vibrate([20,40,20]); return; } tdisp.textContent=format(remaining); }
-  function startTimer(){ readDur(); stopTimer(); timerId=setInterval(tick,1000); }
-  function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
-  function chime(){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.0001; o.connect(g); g.connect(ctx.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.1, ctx.currentTime+0.02); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.35); o.stop(ctx.currentTime+0.4);}catch(e){} }
-
-  // NSFW toggle
-  function setNSFW(on){
-    nsfw = !!on;
-    document.body.classList.toggle('nsfw-on', nsfw);
-    nsfwToggle.classList.toggle('on', nsfw);
-    nsfwToggle.setAttribute('aria-checked', nsfw ? 'true' : 'false');
-    buildWheel(); setAngle(0); out.style.display='none';
-    // flammes visibles si NSFW
-    flames.style.display = nsfw ? 'block' : 'none';
-  }
-
-  // Events
-  document.getElementById('tstart').addEventListener('click', startTimer);
-  document.getElementById('tstop').addEventListener('click', stopTimer);
-  durSel.addEventListener('change', readDur);
-
-  spinBtn.addEventListener('click', spin);
-  resetBtn.addEventListener('click', reset);
-
-  nsfwToggle.addEventListener('click', ()=> setNSFW(!nsfw));
-  nsfwToggle.addEventListener('keydown', e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); setNSFW(!nsfw); } });
-
-  // Init
-  setNSFW(false); // démarre en SFW
-  readDur();      // init chrono
+  function setNSFW(on){nsfw=!!on;document.body.classList.toggle("nsfw-on",nsfw);nsfwToggle.classList.toggle("on",nsfw);buildWheel();setAngle(0);out.style.display="none";}
+  nsfwToggle.addEventListener("click",()=>setNSFW(!nsfw));
+  spinBtn.addEventListener("click",spin);resetBtn.addEventListener("click",reset);
+  tstart.addEventListener("click",startTimer);tstop.addEventListener("click",stopTimer);durSel.addEventListener("change",readDur);
+  setNSFW(false);readDur();
 })();
 </script>
 </body>
