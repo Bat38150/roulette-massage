@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Roulette Massage – Rose / Bleu</title>
+<style>
+  :root{ --rose:#ff5ca8; --bleu:#3fa7ff; --bg:#0f1220; --text:#f5f7ff; }
+  *{box-sizing:border-box} body{margin:0;font-family:system-ui,Segoe UI,Inter,Roboto,Arial,sans-serif;background:#0f1220;color:#f5f7ff;display:grid;place-items:center;min-height:100vh;padding:16px}
+  .wrap{width:min(920px,95vw);display:grid;gap:16px}
+  .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px}
+  h1{margin:0 0 8px;font-size:1.25rem}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr 320px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  .wheel-box{display:grid;place-items:center}
+  .pointer{position:relative;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #ffd166;margin-bottom:-8px;z-index:2}
+  canvas{width:min(560px,90vw);height:auto;display:block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.4));transition:transform 5.2s cubic-bezier(.12,.65,.06,1)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+  button{cursor:pointer;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:#12162a;color:var(--text);padding:10px 14px;font-weight:600}
+  .primary{background:linear-gradient(135deg,var(--bleu),var(--rose));color:#0b0b0f;border:none}
+  textarea{width:100%;min-height:240px;border-radius:10px;background:#0e1120;color:var(--text);border:1px solid rgba(255,255,255,.15);padding:10px;line-height:1.5}
+  .small{opacity:.8;font-size:.9rem}
+  .result{margin-top:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:none}
+  label{display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="grid">
+      <section class="card">
+        <h1>Roulette massage</h1>
+        <p class="small">Bleu = <b>l’homme masse</b>, Rose = <b>la femme masse</b>. Clique sur <b>Lancer</b>.</p>
+        <div class="wheel-box">
+          <div class="pointer" aria-hidden="true"></div>
+          <canvas id="wheel" width="900" height="900" aria-label="Roue de massage"></canvas>
+          <div class="controls">
+            <button id="spin" class="primary">🎡 Lancer</button>
+            <button id="reset">↺ Réinitialiser</button>
+          </div>
+          <div id="out" class="result"></div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h2 style="margin:0 0 8px">Parties du corps</h2>
+        <p class="small">Une par ligne. Clique <b>Actualiser</b>.</p>
+        <textarea id="items">Épaules
+Nuque
+Dos
+Bras
+Mains
+Pieds
+Jambes
+Tempes
+Visage
+Tête
+Mollets
+Cuisses</textarea>
+        <div class="controls" style="justify-content:space-between">
+          <button id="apply">Actualiser</button>
+          <label><input type="checkbox" id="invert"> Inverser rose/bleu</label>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const c = document.getElementById('wheel');
+  const x = c.getContext('2d');
+  const dpr = window.devicePixelRatio||1;
+  let items = [], invert=false, spinning=false, angle=0;
+
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  const COLORS = {rose: css('--rose'), bleu: css('--bleu')};
+
+  function readItems(){
+    const v = document.getElementById('items').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    return v.length>=2 ? v : ['A','B'];
+  }
+  function colorAt(i){return (i%2===0) ^ invert ? COLORS.rose : COLORS.bleu;}
+
+  function resize(){
+    const size = Math.min(c.parentElement.clientWidth, 560);
+    c.style.width = size+'px'; c.style.height = size+'px';
+    c.width = Math.round(size*dpr); c.height = Math.round(size*dpr);
+    draw();
+  }
+
+  function draw(){
+    const W=c.width,H=c.height,cx=W/2,cy=H/2,r=Math.min(W,H)/2-8*dpr,rin=r*0.28;
+    const seg = 2*Math.PI/items.length;
+    x.clearRect(0,0,W,H);
+    for(let i=0;i<items.length;i++){
+      const a0=-Math.PI/2+i*seg, a1=a0+seg;
+      x.beginPath(); x.moveTo(cx,cy); x.arc(cx,cy,r,a0,a1); x.closePath();
+      x.fillStyle=colorAt(i); x.fill();
+      // label
+      const mid=a0+seg/2; x.save();
+      x.translate(cx+Math.cos(mid)*(rin+(r-rin)*0.62), cy+Math.sin(mid)*(rin+(r-rin)*0.62));
+      x.rotate(mid+Math.PI/2);
+      x.fillStyle='#0b0b0f';
+      x.font=`${Math.max(12,Math.min(22,r*0.07))*dpr}px system-ui,Segoe UI,Inter,Roboto`;
+      x.textAlign='center'; x.textBaseline='middle';
+      shrinkText(items[i], (r-rin)*0.9); x.restore();
+      // divider
+      x.strokeStyle='rgba(255,255,255,.15)'; x.lineWidth=2*dpr;
+      x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+Math.cos(a0)*r, cy+Math.sin(a0)*r); x.stroke();
+    }
+    // hub
+    x.beginPath(); x.arc(cx,cy,rin,0,Math.PI*2); x.fillStyle='#fff'; x.fill();
+    x.fillStyle='#11131e'; x.font=`${Math.max(12,r*0.09)*dpr}px 700 system-ui`; x.textAlign='center'; x.textBaseline='middle';
+    x.fillText('Massage',cx,cy);
+
+    function shrinkText(t,maxW){let fs=parseFloat(x.font); while(x.measureText(t).width>maxW && fs>10*dpr){fs-=1*dpr; x.font=`${fs}px system-ui,Segoe UI,Inter,Roboto`;} x.fillText(t,0,0);}
+  }
+
+  function setAngle(deg){angle=deg; c.style.transform=`rotate(${deg}deg)`;}
+
+  function spin(){
+    if(spinning) return; spinning=true; document.getElementById('out').style.display='none';
+    const n=items.length, seg=360/n, idx=Math.floor(Math.random()*n), center=idx*seg+seg/2;
+    const turns=5+Math.floor(Math.random()*3), final=turns*360+(360-center), jitter=(Math.random()-0.5)*6;
+    c.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)'; void c.offsetWidth; setAngle(final+jitter);
+    const end=()=>{c.removeEventListener('transitionend',end); c.style.transition='transform .001s linear'; setAngle(final);
+      setTimeout(()=>c.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)',10);
+      const col=colorAt(idx), part=items[idx], isBlue=(col.toLowerCase()===COLORS.bleu.toLowerCase());
+      const out=document.getElementById('out'); out.style.display='block';
+      out.innerHTML=`<b>${isBlue?"L’homme":"La femme"}</b> masse <b>${escape(part)}</b> — <span style="padding:2px 8px;border-radius:999px;background:${isBlue?'var(--bleu)':'var(--rose)'};color:#0b0b0f">${isBlue?'Bleu':'Rose'}</span>`;
+      spinning=false;
+    }; c.addEventListener('transitionend',end);
+  }
+
+  function escape(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+  function apply(){items=readItems(); draw(); setAngle(0); document.getElementById('out').style.display='none';}
+
+  window.addEventListener('resize',resize,{passive:true});
+  document.getElementById('spin').addEventListener('click',spin);
+  document.getElementById('reset').addEventListener('click',()=>{if(!spinning){setAngle(0); document.getElementById('out').style.display='none';}});
+  document.getElementById('apply').addEventListener('click',apply);
+  document.getElementById('invert').addEventListener('change',e=>{invert=e.target.checked; draw();});
+
+  items=readItems(); resize();
+})();
+</script>
+</body>
+</html>
