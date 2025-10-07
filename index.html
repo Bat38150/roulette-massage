@@ -182,7 +182,7 @@ select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-
   function colorAt(i){return nsfw?(i%2?css("--nsfwB"):css("--nsfwA")):(i%2?css("--segA"):css("--segB"))}
   function buildWheel(){
     loadItems();group.innerHTML="";flames.style.display=nsfw?"block":"none";
-    const n=items.length,R=480,Rt=300;
+    const n=items.length,R=480,Rt=320;
     for(let i=0;i<n;i++){
       const a0=-Math.PI/2+i*(2*Math.PI/n),a1=-Math.PI/2+(i+1)*(2*Math.PI/n);
       group.appendChild(el("path",{d:sector(R,a0,a1),fill:colorAt(i)}));
