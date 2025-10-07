@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
@@ -16,13 +17,11 @@
 :root {
   --rose:#ff5ca8; --bleu:#3fa7ff;
   --segA:#ff5ca8; --segB:#3fa7ff;
-  --nsfwA:#ff2740; --nsfwB:#300000;
+  --nsfwA:#ff2740; --nsfwB:#200000;
   --text:#eef2ff; --muted:#9aa3b2; --ring:rgba(255,255,255,.12);
   --bg:#0b0f1a; --glow1:#1e2746; --glow2:#242a4a; --accent:#ffd166;
 }
-.nsfw-on {
-  --bg:#0a0a0d; --glow1:#3b0d14; --glow2:#160b0e; --accent:#ff2740;
-}
+.nsfw-on { --bg:#0a0a0d; --glow1:#3b0d14; --glow2:#160b0e; --accent:#ff2740; }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body {
   margin:0; font-family:-apple-system,Inter,Roboto,sans-serif;
@@ -48,10 +47,7 @@ h1 {
   -webkit-background-clip:text; background-clip:text; color:transparent;
 }
 .nsfw-on h1{animation:pulse 2.6s ease-in-out infinite}
-@keyframes pulse{
-  0%,100%{filter:drop-shadow(0 0 0 rgba(255,39,64,0))}
-  50%{filter:drop-shadow(0 0 18px rgba(255,39,64,.32))}
-}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 0 rgba(255,39,64,0))}50%{filter:drop-shadow(0 0 18px rgba(255,39,64,.32))}}
 .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
 button{
   appearance:none;border:1px solid var(--ring);background:#12162a;color:var(--text);
@@ -60,36 +56,28 @@ button{
 }
 .primary{background:linear-gradient(135deg,var(--bleu),var(--rose));color:#0b0b0f;border:none}
 .nsfw-on .primary{background:linear-gradient(135deg,#ff2740,#b80f2d);color:#0b0b0f}
-
 .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(12px,3.2vw,14px)}
 .swatch{width:14px;height:14px;border-radius:50%}
 .muted{color:var(--muted)}
-
-/* Switch NSFW */
 .switch{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 2px}
 .switch .lab{font-weight:700}
 .toggle{position:relative;width:56px;height:30px;border-radius:30px;background:#2a2f45;border:1px solid var(--ring);cursor:pointer;transition:.2s}
 .toggle::after{content:"";position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:.22s}
 .toggle.on{background:#ff2740;border-color:#ff2740}
 .toggle.on::after{transform:translateX(26px)}
-
 .wheel-box{display:grid;place-items:center;position:relative}
 .pointer{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid var(--accent);margin:2px 0 -8px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
 svg{width:min(86vw,560px);height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.4));touch-action:manipulation}
-
-#spin {transform-box: fill-box; transform-origin: 0px 0px;} /* centrage SVG iPhone */
+#spin {transform-box: fill-box; transform-origin: center center;} /* ✅ Centrage corrigé */
 #wheelSvg { text-rendering: optimizeLegibility; }
-
-/* Flammes et hub */
 @keyframes flameFlicker{0%{opacity:.6;transform:scale(1)}50%{opacity:.9;transform:scale(1.02)}100%{opacity:.7;transform:scale(1)}}
 @keyframes hubPulse{0%,100%{opacity:.5;filter:blur(22px)}50%{opacity:.9;filter:blur(28px)}}
-
-/* Chrono */
 .timer{display:none;margin-top:8px;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
 .timer .display{font-variant-numeric:tabular-nums;font-weight:800;padding:6px 10px;border-radius:10px;border:1px solid var(--ring);background:rgba(255,255,255,.06)}
 select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-radius:10px;padding:10px 12px}
 </style>
 </head>
+
 <body>
 <div class="wrap">
   <section class="card">
@@ -103,8 +91,8 @@ select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-
     <div class="wheel-box">
       <div class="pointer"></div>
 
-      <!-- SVG roue -->
-      <svg id="wheelSvg" viewBox="-500 -500 1000 1000">
+      <!-- 🧭 SVG centré -->
+      <svg id="wheelSvg" viewBox="0 0 1000 1000">
         <defs>
           <radialGradient id="flameGrad" cx="50%" cy="50%" r="55%">
             <stop offset="0%" stop-color="#ff6a00" stop-opacity="0.85"/>
@@ -118,15 +106,17 @@ select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-
           </radialGradient>
         </defs>
 
-        <!-- Le groupe qu’on fait tourner -->
-        <g id="spin" transform="translate(0,0)">
-          <g id="flames" style="display:none">
-            <circle r="455" fill="url(#flameGrad)" style="animation:flameFlicker 2s infinite"></circle>
-          </g>
-          <g id="wheelGroup"></g>
-          <g id="hub">
-            <circle r="140" fill="url(#hubGrad)"></circle>
-            <circle r="170" fill="#ff2740" opacity=".6" style="filter:blur(24px);animation:hubPulse 3s infinite"></circle>
+        <!-- On replace tout au centre du SVG -->
+        <g transform="translate(500,500)">
+          <g id="spin">
+            <g id="flames" style="display:none">
+              <circle r="455" fill="url(#flameGrad)" style="animation:flameFlicker 2s infinite"></circle>
+            </g>
+            <g id="wheelGroup"></g>
+            <g id="hub">
+              <circle r="140" fill="url(#hubGrad)"></circle>
+              <circle r="170" fill="#ff2740" opacity=".6" style="filter:blur(24px);animation:hubPulse 3s infinite"></circle>
+            </g>
           </g>
         </g>
       </svg>
@@ -159,48 +149,30 @@ select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-
 </div>
 
 <script>
-/* ===================================
-   JavaScript principal (commenté)
-   =================================== */
 (function(){
-  const NAME_BLUE="Baptistou", NAME_ROSE="Julitou";
+  const NAME_BLUE="Baptistou",NAME_ROSE="Julitou";
   const LIST_SFW=["Épaules","Nuque","Dos","Bras","Mains","Pieds","Jambes","Visage","Tête","Mollets","Cuisses"];
-  const LIST_NSFW_RAW=[
-    "Happy Ending","Lingam(H)","Cuni(F)","Levrette","Yoni(H)","Missionnaire","Anus(H)","Jouissance simultanée"
-  ];
+  const LIST_NSFW_RAW=["Happy Ending","Lingam(H)","Cuni(F)","Levrette","Yoni(H)","Missionnaire","Anus(H)","Jouissance simultanée"];
 
-  const spinG=document.getElementById("spin"),
-        group=document.getElementById("wheelGroup"),
-        flames=document.getElementById("flames"),
-        legend=document.getElementById("legend"),
-        out=document.getElementById("out"),
-        nsfwToggle=document.getElementById("nsfwToggle"),
-        spinBtn=document.getElementById("spinBtn"),
-        resetBtn=document.getElementById("reset");
-
-  // Chrono
-  const timerRow=document.getElementById("timerRow"),durSel=document.getElementById("dur"),
-        tdisp=document.getElementById("tdisp"),tstart=document.getElementById("tstart"),
-        tstop=document.getElementById("tstop"),autoStart=document.getElementById("autoStart");
-
+  const spinG=document.getElementById("spin"),group=document.getElementById("wheelGroup"),flames=document.getElementById("flames"),legend=document.getElementById("legend"),out=document.getElementById("out");
+  const nsfwToggle=document.getElementById("nsfwToggle"),spinBtn=document.getElementById("spinBtn"),resetBtn=document.getElementById("reset");
+  const timerRow=document.getElementById("timerRow"),durSel=document.getElementById("dur"),tdisp=document.getElementById("tdisp"),tstart=document.getElementById("tstart"),tstop=document.getElementById("tstop"),autoStart=document.getElementById("autoStart");
   let nsfw=false,spinning=false,items=[],timerId=null,remaining=300;
 
-  function parseNSFW(list){return list.map(s=>{const m=s.match(/\((H|F)\)$/i);return{label:s.replace(/\((H|F)\)$/i,"").trim(),tag:m?m[1].toUpperCase():null}})}
-  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
-  function el(n,a={},t){const e=document.createElementNS("http://www.w3.org/2000/svg",n);for(const k in a)e.setAttribute(k,a[k]);if(t)e.textContent=t;return e;}
-  function sector(cx,cy,r,a0,a1){const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),large=a1-a0>Math.PI?1:0;return`M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`;}
-  function arc(cx,cy,r,a0,a1){const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),large=a1-a0>Math.PI?1:0;return`M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;}
-
-  function colorAt(i){return nsfw?(i%2?css("--nsfwB"):css("--nsfwA")):(i%2?css("--segA"):css("--segB"))}
+  const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const el=(n,a={},t)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",n);for(const k in a)e.setAttribute(k,a[k]);if(t)e.textContent=t;return e;};
+  const sector=(r,a0,a1)=>{const x0=r*Math.cos(a0),y0=r*Math.sin(a0),x1=r*Math.cos(a1),y1=r*Math.sin(a1);return`M0 0 L${x0} ${y0} A${r} ${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1} ${y1} Z`;}
+  const arc=(r,a0,a1)=>{const x0=r*Math.cos(a0),y0=r*Math.sin(a0),x1=r*Math.cos(a1),y1=r*Math.sin(a1);return`M${x0} ${y0} A${r} ${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1} ${y1}`;}
+  function parseNSFW(list){return list.map(s=>{const m=s.match(/\((H|F)\)$/i);return{label:s.replace(/\((H|F)\)$/i,"").trim(),tag:m?m[1].toUpperCase():null}});}
   function loadItems(){items=nsfw?parseNSFW(LIST_NSFW_RAW):LIST_SFW.map(l=>({label:l,tag:null}))}
-
+  function colorAt(i){return nsfw?(i%2?css("--nsfwB"):css("--nsfwA")):(i%2?css("--segA"):css("--segB"))}
   function buildWheel(){
     loadItems();group.innerHTML="";flames.style.display=nsfw?"block":"none";
     const n=items.length,R=480,Rt=300;
     for(let i=0;i<n;i++){
       const a0=-Math.PI/2+i*(2*Math.PI/n),a1=-Math.PI/2+(i+1)*(2*Math.PI/n);
-      group.appendChild(el("path",{d:sector(0,0,R,a0,a1),fill:colorAt(i)}));
-      const arcId=`a${i}`,p=el("path",{id:arcId,d:arc(0,0,Rt,a0+0.08,a1-0.08),fill:"none"});group.appendChild(p);
+      group.appendChild(el("path",{d:sector(R,a0,a1),fill:colorAt(i)}));
+      const arcId=`a${i}`,p=el("path",{id:arcId,d:arc(Rt,a0+0.08,a1-0.08),fill:"none"});group.appendChild(p);
       const txt=el("text",{"font-size":nsfw?"26":"20","fill":nsfw?"#fff":"#0b0b0f","font-weight":"700","font-family":"Inter"});
       const tp=el("textPath",{href:`#${arcId}`,"startOffset":"50%","text-anchor":"middle"},items[i].label);
       txt.appendChild(tp);group.appendChild(txt);
@@ -211,29 +183,17 @@ select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-
       `<span class="chip"><span class="swatch" style="background:var(--bleu)"></span>Bleu : <b>Baptistou</b></span>
        <span class="chip"><span class="swatch" style="background:var(--rose)"></span>Rose : <b>Julitou</b></span>`;
   }
-
-  function setAngle(d){spinG.style.transform=`rotate(${d}deg)`;spinG.style.transformOrigin="0px 0px";spinG.style.transformBox="fill-box";}
-  function showRes(i){const it=items[i];if(!nsfw){const isBlue=colorAt(i)===css("--segB");out.innerHTML=`<b>${isBlue?NAME_BLUE:NAME_ROSE}</b> masse <b>${it.label}</b>`}
-    else{const r=it.tag==="H"?NAME_BLUE:it.tag==="F"?NAME_ROSE:(Math.random()<.5?NAME_BLUE:NAME_ROSE);out.innerHTML=`🎲 <b>${it.label}</b> — Pour <b>${r}</b>`}out.style.display="block"}
-
-  function spin(){
-    if(spinning)return;spinning=true;out.style.display="none";timerRow.style.display="flex";
-    const n=items.length,seg=360/n,idx=Math.floor(Math.random()*n),center=idx*seg+seg/2,turns=5+Math.floor(Math.random()*3),final=turns*360+(360-center)+(Math.random()-0.5)*6;
-    spinG.style.transition="transform 5.2s cubic-bezier(.12,.65,.06,1)";void spinG.offsetWidth;setAngle(final);
-    spinG.addEventListener("transitionend",()=>{spinG.style.transition="";setAngle(final);showRes(idx);if(autoStart.checked)startTimer();spinning=false},{once:true});
-  }
-
+  function setAngle(d){spinG.style.transform=`rotate(${d}deg)`;spinG.style.transformOrigin="center center";spinG.style.transformBox="fill-box";}
+  function showRes(i){const it=items[i];if(!nsfw){const isBlue=colorAt(i)===css("--segB");out.innerHTML=`<b>${isBlue?NAME_BLUE:NAME_ROSE}</b> masse <b>${it.label}</b>`}else{const r=it.tag==="H"?NAME_BLUE:it.tag==="F"?NAME_ROSE:(Math.random()<.5?NAME_BLUE:NAME_ROSE);out.innerHTML=`🎲 <b>${it.label}</b> — Pour <b>${r}</b>`}out.style.display="block";}
+  function spin(){if(spinning)return;spinning=true;out.style.display="none";timerRow.style.display="flex";const n=items.length,seg=360/n,idx=Math.floor(Math.random()*n),center=idx*seg+seg/2,turns=5+Math.floor(Math.random()*3),final=turns*360+(360-center)+(Math.random()-0.5)*6;spinG.style.transition="transform 5.2s cubic-bezier(.12,.65,.06,1)";void spinG.offsetWidth;setAngle(final);spinG.addEventListener("transitionend",()=>{spinG.style.transition="";setAngle(final);showRes(idx);if(autoStart.checked)startTimer();spinning=false},{once:true});}
   function reset(){setAngle(0);out.style.display="none";stopTimer()}
   function readDur(){remaining=parseInt(durSel.value,10)||300;tdisp.textContent=format(remaining)}
   function format(s){return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
   function tick(){remaining--;tdisp.textContent=format(remaining);if(remaining<=0){stopTimer();if(navigator.vibrate)navigator.vibrate([20,40,20]);}}
   function startTimer(){readDur();stopTimer();timerId=setInterval(tick,1000)}
   function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}}
-
   function setNSFW(on){nsfw=!!on;document.body.classList.toggle("nsfw-on",nsfw);nsfwToggle.classList.toggle("on",nsfw);buildWheel();setAngle(0);out.style.display="none";}
-  nsfwToggle.addEventListener("click",()=>setNSFW(!nsfw));
-  spinBtn.addEventListener("click",spin);resetBtn.addEventListener("click",reset);
-  tstart.addEventListener("click",startTimer);tstop.addEventListener("click",stopTimer);durSel.addEventListener("change",readDur);
+  nsfwToggle.addEventListener("click",()=>setNSFW(!nsfw));spinBtn.addEventListener("click",spin);resetBtn.addEventListener("click",reset);tstart.addEventListener("click",startTimer);tstop.addEventListener("click",stopTimer);durSel.addEventListener("change",readDur);
   setNSFW(false);readDur();
 })();
 </script>
