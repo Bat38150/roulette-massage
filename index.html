@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Massage barrel – Roulette (SVG)</title>
+<title>Massage barrel – Roulette (SVG + NSFW)</title>
 
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
@@ -14,40 +14,82 @@
 <style>
   :root{
     --rose:#ff5ca8; --bleu:#3fa7ff; --ink:#0b0b0f; --text:#eef2ff; --muted:#9aa3b2;
-    --bg:#0b0f1a; --card:#12182a; --ring: rgba(255,255,255,.12);
+    --bg:#0b0f1a; --ring: rgba(255,255,255,.12);
+    --accent:#ffd166;
+    --glow1:#1e2746; --glow2:#242a4a;
   }
+  /* Thème NSFW (rouge/noir intense) */
+  .nsfw-on{
+    --bg:#0a0a0d;
+    --glow1:#3b0d14; /* rouge sombre */
+    --glow2:#0f0a0e; /* noir bordeaux */
+    --accent:#ff2740; /* rouge vif */
+  }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{
     margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,Roboto,Arial,sans-serif;
     color:var(--text);
     background:
-      radial-gradient(1200px 800px at 80% -10%, #1e2746 0%, rgba(30,39,70,0) 60%),
-      radial-gradient(900px 600px at 0% 100%, #242a4a 0%, rgba(36,42,74,0) 55%),
+      radial-gradient(1200px 800px at 80% -10%, var(--glow1) 0%, rgba(30,39,70,0) 60%),
+      radial-gradient(900px 600px at 0% 100%, var(--glow2) 0%, rgba(36,42,74,0) 55%),
       var(--bg);
     padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left);
+    transition: background 400ms ease;
   }
   .wrap{width:min(980px,100%);margin:0 auto;padding:12px}
   .grid{display:grid;gap:14px;grid-template-columns:1fr 360px}
   @media (max-width:880px){.grid{grid-template-columns:1fr}}
   .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--ring);border-radius:18px;padding:clamp(12px,2.8vw,18px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
-  h1{margin:0 0 6px;font-weight:800;letter-spacing:.2px;font-size:clamp(22px,4.8vw,32px);line-height:1.15;background:linear-gradient(90deg,var(--bleu),var(--rose));-webkit-background-clip:text;background-clip:text;color:transparent}
-  h2{margin:0 0 8px;font-size:clamp(16px,3.4vw,20px)}
+  h1{
+    margin:0 0 8px; font-weight:900; letter-spacing:.2px; line-height:1.15;
+    font-size:clamp(22px,4.8vw,32px);
+    background: linear-gradient(90deg, var(--bleu), var(--rose));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  /* Pulsation douce du titre en NSFW */
+  .nsfw-on h1{ animation: pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{filter:drop-shadow(0 0 0 rgba(255,39,64,.0))} 50%{filter:drop-shadow(0 0 18px rgba(255,39,64,.32))} }
+
   .muted{color:var(--muted);font-size:clamp(13px,3.2vw,15px)}
   .wheel-box{display:grid;place-items:center}
-  .pointer{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid #ffd166;margin:2px 0 -8px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+  .pointer{
+    width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid var(--accent);
+    margin:2px 0 -8px; filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));
+  }
   svg{width:min(86vw,560px);height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.4));touch-action:manipulation}
   .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
-  button{appearance:none;border:1px solid var(--ring);background:#12162a;color:var(--text);border-radius:14px;padding:12px 16px;font-weight:700;font-size:clamp(14px,3.8vw,16px);min-width:120px;cursor:pointer}
-  .primary{background:linear-gradient(135deg,var(--bleu),var(--rose));color:var(--ink);border:none}
-  button:active{transform:translateY(1px)}
-  textarea{width:100%;min-height:260px;resize:vertical;border-radius:14px;padding:12px;line-height:1.5;background:#0f1426;color:var(--text);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,15px)}
+  button{
+    appearance:none;border:1px solid var(--ring);background:#12162a;color:var(--text);
+    border-radius:14px;padding:12px 16px;font-weight:700;font-size:clamp(14px,3.8vw,16px);min-width:120px;cursor:pointer
+  }
+  .primary{background:linear-gradient(135deg, var(--bleu), var(--rose)); color:var(--ink); border:none}
+  .nsfw-on .primary{ background:linear-gradient(135deg, #ff2740, #b80f2d); color:#0b0b0f; }
+
   .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(12px,3.2vw,14px)}
   .swatch{width:14px;height:14px;border-radius:50%}
   .result{margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,16px);display:none}
-  .timer{display:none;margin-top:8px;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-  .timer .display{font-variant-numeric:tabular-nums;font-weight:800;padding:6px 10px;border-radius:10px;border:1px solid var(--ring);background:rgba(255,255,255,.06)}
-  select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-radius:10px;padding:10px 12px}
-  @media (prefers-reduced-motion:reduce){.spin-anim{transition:none}}
+  textarea{
+    width:100%; min-height:220px; resize:vertical; border-radius:14px; padding:12px; line-height:1.5;
+    background:#0f1426; color:var(--text); border:1px solid var(--ring); font-size:clamp(14px,3.6vw,15px)
+  }
+
+  /* Switch iOS NSFW */
+  .switch{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 2px}
+  .switch .lab{font-weight:700; letter-spacing:.2px}
+  .toggle{
+    --w:56px; --h:30px; --r:14px;
+    position:relative; width:var(--w); height:var(--h); border-radius:var(--h);
+    background: #2a2f45; border:1px solid var(--ring); cursor:pointer; transition: background .2s ease, border-color .2s ease;
+  }
+  .toggle::after{
+    content:""; position:absolute; top:2px; left:2px; width:26px; height:26px; border-radius:50%;
+    background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.4); transition: transform .22s ease;
+  }
+  .toggle.on{ background:#ff2740; border-color:#ff2740; }
+  .toggle.on::after{ transform: translateX(26px); }
+
+  @media (prefers-reduced-motion:reduce){svg{transition:none}}
 </style>
 </head>
 <body>
@@ -57,11 +99,17 @@
         <h1>Massage barrel</h1>
         <p class="muted">Bleu = <b>Baptistou masse</b>, Rose = <b>Julitou masse</b>. Clique sur <b>Lancer</b>.</p>
 
+        <!-- Switch NSFW -->
+        <div class="switch">
+          <span class="lab muted">NSFW</span>
+          <div id="nsfwToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
+        </div>
+
         <div class="wheel-box">
           <div class="pointer" aria-hidden="true"></div>
 
           <!-- SVG WHEEL -->
-          <svg id="wheelSvg" viewBox="-500 -500 1000 1000" class="spin-anim" aria-label="Roue de massage">
+          <svg id="wheelSvg" viewBox="-500 -500 1000 1000" aria-label="Roue de massage">
             <defs id="defs"></defs>
             <g id="wheelGroup"></g>
 
@@ -84,7 +132,7 @@
           <div id="out" class="result"></div>
 
           <!-- Minuteur -->
-          <div class="timer" id="timerRow">
+          <div class="controls" id="timerRow" style="display:none; gap:8px">
             <label class="muted">Durée
               <select id="dur">
                 <option value="120">2 min</option>
@@ -93,7 +141,7 @@
                 <option value="600">10 min</option>
               </select>
             </label>
-            <span class="display" id="tdisp">05:00</span>
+            <span class="chip" id="tdisp" style="font-variant-numeric:tabular-nums">05:00</span>
             <button id="tstart" class="primary">▶︎ Démarrer</button>
             <button id="tstop">■ Stop</button>
             <label class="muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="autoStart" checked> Auto au tirage</label>
@@ -104,6 +152,8 @@
       <aside class="card">
         <h2>Parties du corps</h2>
         <p class="muted">Une par ligne. Appuie sur <b>Actualiser</b>.</p>
+
+        <!-- Liste classique (toujours affichée) -->
         <textarea id="items">Épaules
 Nuque
 Dos
@@ -111,11 +161,14 @@ Bras
 Mains
 Pieds
 Jambes
-Sexe
 Visage
 Tête
 Mollets
 Cuisses</textarea>
+
+        <!-- Liste NSFW (ajouts) — c'est ICI que tu écris tes noms “coquins” -->
+        <p class="muted" style="margin-top:10px"><b>Liste NSFW (ajouts)</b> — s’affiche uniquement quand le switch NSFW est activé.</p>
+        <textarea id="itemsNSFW" placeholder="(Écris ici tes ajouts NSFW, un par ligne)"></textarea>
 
         <div class="controls" style="justify-content:space-between">
           <button id="apply">Actualiser</button>
@@ -131,63 +184,83 @@ Cuisses</textarea>
 (function(){
   const NAME_BLUE = "Baptistou";
   const NAME_ROSE = "Julitou";
-  const svg = document.getElementById('wheelSvg');
+  const svg  = document.getElementById('wheelSvg');
   const defs = document.getElementById('defs');
-  const group = document.getElementById('wheelGroup');
+  const group= document.getElementById('wheelGroup');
 
   // PWA SW
   if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 
-  let items=[], invert=false, spinning=false, angle=0;
-
-  // ===== Timer state =====
-  let timerId=null, remaining=300; // 5 min par défaut
+  // UI refs
+  const out = document.getElementById('out');
+  const nsfwToggle = document.getElementById('nsfwToggle');
+  const timerRow = document.getElementById('timerRow');
   const durSel = document.getElementById('dur');
   const tdisp  = document.getElementById('tdisp');
   const tstart = document.getElementById('tstart');
   const tstop  = document.getElementById('tstop');
-  const trow   = document.getElementById('timerRow');
   const autoStart = document.getElementById('autoStart');
 
+  let items=[], invert=false, nsfw=false, spinning=false, angle=0;
+
+  // Timer
+  let timerId=null, remaining=300;
+  function format(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=(s%60).toString().padStart(2,'0'); return `${m}:${ss}`; }
+  function readDur(){ remaining=parseInt(durSel.value,10)||300; tdisp.textContent=format(remaining); }
+  function tick(){ remaining--; if(remaining<=0){ tdisp.textContent='00:00'; stopTimer(); chime(); if(navigator.vibrate) navigator.vibrate([20,40,20]); return; } tdisp.textContent=format(remaining); }
+  function startTimer(){ readDur(); stopTimer(); timerId=setInterval(tick,1000); }
+  function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+  function chime(){ try{ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.0001; o.connect(g); g.connect(ctx.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.1, ctx.currentTime+0.02); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.35); o.stop(ctx.currentTime+0.4);}catch(e){} }
+
+  // State helpers
   function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
   const COLORS = { rose: css('--rose'), bleu: css('--bleu') };
-
-  function readItems(){
-    const v = document.getElementById('items').value.split('\n').map(s=>s.trim()).filter(Boolean);
-    return v.length>=2 ? v : ['A','B'];
-  }
   function colorAt(i){ return (i%2===0) ^ invert ? COLORS.rose : COLORS.bleu; }
 
-  // ===== SVG wheel =====
+  // Storage
+  const LS_KEYS = { classic:'mb_items', nsfw:'mb_items_nsfw', invert:'mb_invert', nsfwOn:'mb_nsfw_on' };
+  function saveLists(){
+    localStorage.setItem(LS_KEYS.classic, document.getElementById('items').value);
+    localStorage.setItem(LS_KEYS.nsfw,   document.getElementById('itemsNSFW').value);
+    localStorage.setItem(LS_KEYS.invert, invert?'1':'0');
+    localStorage.setItem(LS_KEYS.nsfwOn, nsfw?'1':'0');
+  }
+  function loadLists(){
+    const a=localStorage.getItem(LS_KEYS.classic); if(a!=null) document.getElementById('items').value=a;
+    const b=localStorage.getItem(LS_KEYS.nsfw);   if(b!=null) document.getElementById('itemsNSFW').value=b;
+    invert = localStorage.getItem(LS_KEYS.invert)==='1';
+    nsfw   = localStorage.getItem(LS_KEYS.nsfwOn)==='1';
+    document.getElementById('invert').checked = invert;
+    setNSFW(nsfw, false);
+  }
+
+  function readItems(){
+    const base = document.getElementById('items').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    if(!nsfw) return base.length>=2 ? base : ['A','B'];
+    const extra = document.getElementById('itemsNSFW').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    const combined = base.concat(extra);
+    return combined.length>=2 ? combined : ['A','B'];
+  }
+
+  // SVG wheel
   function buildWheel(){
-    group.innerHTML = ''; defs.innerHTML = '';
-    const n = items.length;
-    const R = 480;     // outer radius
-    const Rt = 300;    // text radius
-    const sepColor = 'rgba(255,255,255,.2)';
+    items = readItems();
+    group.innerHTML=''; defs.innerHTML='';
+    const n = items.length; const R=480; const Rt=300; const sep='rgba(255,255,255,.2)';
+
     for(let i=0;i<n;i++){
-      const a0 = -Math.PI/2 + i*(2*Math.PI/n);
-      const a1 = -Math.PI/2 + (i+1)*(2*Math.PI/n);
-
-      // slice
+      const a0=-Math.PI/2+i*(2*Math.PI/n), a1=-Math.PI/2+(i+1)*(2*Math.PI/n);
       group.appendChild( el('path',{d:sectorPath(0,0,R,a0,a1), fill:colorAt(i)}) );
-      // divider
-      group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(a0),y2:R*Math.sin(a0),stroke:sepColor,'stroke-width':2}) );
+      group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(a0),y2:R*Math.sin(a0),stroke:sep,'stroke-width':2}) );
 
-      // text arc
-      const arcId = `arc-${i}`;
-      defs.appendChild( el('path',{id:arcId, d:arcPath(0,0,Rt,a0+0.08, a1-0.08), fill:'none'}) );
-
-      // text on arc
-      const txt = el('text', {'font-family':'-apple-system, Inter, Roboto, Arial','fill':'#0b0b0f','font-weight':'700'});
-      const tp  = el('textPath',{href:`#${arcId}`,'startOffset':'50%','text-anchor':'middle'}, sanitize(items[i]));
+      const arcId=`arc-${i}`; defs.appendChild( el('path',{id:arcId,d:arcPath(0,0,Rt,a0+0.08,a1-0.08),fill:'none'}) );
+      const txt=el('text',{'font-family':'-apple-system, Inter, Roboto, Arial','fill':'#0b0b0f','font-weight':'700'});
+      const tp =el('textPath',{href:`#${arcId}`,'startOffset':'50%','text-anchor':'middle'}, sanitize(items[i]));
       txt.appendChild(tp); group.appendChild(txt);
-
-      fitTextOnPath(txt, tp, defs.lastChild, 22, 10);
+      fitTextOnPath(txt,tp,defs.lastChild,22,10);
     }
-    // close divider
-    const aEnd = -Math.PI/2 + n*(2*Math.PI/n);
-    group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(aEnd),y2:R*Math.sin(aEnd),stroke:sepColor,'stroke-width':2}) );
+    const aEnd=-Math.PI/2+n*(2*Math.PI/n);
+    group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(aEnd),y2:R*Math.sin(aEnd),stroke:sep,'stroke-width':2}) );
   }
 
   function el(name, attrs={}, text){ const e=document.createElementNS('http://www.w3.org/2000/svg', name); for(const k in attrs) e.setAttribute(k, attrs[k]); if(text!=null) e.textContent=text; return e; }
@@ -195,7 +268,6 @@ Cuisses</textarea>
   function arcPath(cx,cy,r,a0,a1){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1); const large=(a1-a0)%(2*Math.PI)>Math.PI?1:0; return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`; }
   function arcLength(pathEl){ try{ return pathEl.getTotalLength(); } catch{ return 0; } }
   function sanitize(s){ return s.replace(/[\u0000-\u001F<>]/g,'').trim(); }
-
   function fitTextOnPath(textEl, textPathEl, arcEl, maxFs, minFs){
     const avail = arcLength(arcEl) * 0.9;
     let fs = maxFs; textEl.setAttribute('font-size', fs);
@@ -207,77 +279,62 @@ Cuisses</textarea>
     }
   }
 
-  // ===== Spin =====
   function setAngle(deg){ angle=deg; svg.style.transform=`rotate(${deg}deg)`; svg.style.transformOrigin='50% 50%'; }
+  function showResult(isBlue, part){
+    out.style.display='block';
+    out.innerHTML = `<b>${isBlue ? "Baptistou" : "Julitou"}</b> masse <b>${escapeHtml(part)}</b> — `
+      + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
+  }
+  function hideResult(){ out.style.display='none'; }
+
   function spin(){
-    if(spinning) return; spinning = true; hideResult(); stopTimer();
+    if(spinning) return; spinning=true; hideResult(); stopTimer();
     const n=items.length, seg=360/n, idx=Math.floor(Math.random()*n), center=idx*seg+seg/2;
     const turns=5+Math.floor(Math.random()*3), final=turns*360+(360-center), jitter=(Math.random()-0.5)*6;
 
     svg.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)'; void svg.offsetWidth; setAngle(final+jitter);
-
     const end=()=>{
       svg.removeEventListener('transitionend',end);
       svg.style.transition='transform .001s linear'; setAngle(final);
       setTimeout(()=> svg.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
 
-      const col=colorAt(idx), part=items[idx], isBlue=(col.toLowerCase()===COLORS.bleu.toLowerCase());
+      const col = colorAt(idx), part = items[idx], isBlue = (col.toLowerCase()===css('--bleu').toLowerCase());
       showResult(isBlue, part);
       if (navigator.vibrate) navigator.vibrate(10);
-      if (autoStart.checked) { startTimer(); }
+      if (autoStart.checked){ startTimer(); timerRow.style.display='flex'; }
       spinning=false;
     };
     svg.addEventListener('transitionend', end);
   }
 
-  // ===== Result helpers =====
-  const out = document.getElementById('out');
-  function showResult(isBlue, part){
-    out.style.display='block';
-    out.innerHTML = `<b>${isBlue ? NAME_BLUE : NAME_ROSE}</b> masse <b>${escapeHtml(part)}</b> — `
-      + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
-    trow.style.display='flex';
-  }
-  function hideResult(){ out.style.display='none'; }
-
-  // ===== Timer logic =====
-  function format(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=(s%60).toString().padStart(2,'0'); return `${m}:${ss}`; }
-  function readDur(){ remaining = parseInt(durSel.value,10)||300; tdisp.textContent = format(remaining); }
-  function tick(){
-    remaining--;
-    if (remaining<=0){ tdisp.textContent = '00:00'; stopTimer(); chime(); if (navigator.vibrate) navigator.vibrate([20,40,20]); return; }
-    tdisp.textContent = format(remaining);
-  }
-  function startTimer(){ readDur(); stopTimer(); timerId = setInterval(tick, 1000); }
-  function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
-
-  // Petit “ding” WebAudio
-  function chime(){
-    try{
-      const ctx = new (window.AudioContext||window.webkitAudioContext)();
-      const o = ctx.createOscillator(); const g = ctx.createGain();
-      o.type='sine'; o.frequency.value=880; g.gain.value=0.0001;
-      o.connect(g); g.connect(ctx.destination); o.start();
-      // vol montée/descente
-      g.gain.exponentialRampToValueAtTime(0.1, ctx.currentTime+0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.35);
-      o.stop(ctx.currentTime+0.4);
-    }catch(e){}
+  // NSFW toggle (thème + contenu)
+  function setNSFW(on, save=true){
+    nsfw = !!on;
+    document.body.classList.toggle('nsfw-on', nsfw);
+    nsfwToggle.classList.toggle('on', nsfw);
+    nsfwToggle.setAttribute('aria-checked', nsfw ? 'true' : 'false');
+    buildWheel();
+    if(save) saveLists();
   }
 
-  // ===== Events =====
+  // Events
   document.getElementById('spin').addEventListener('click', spin);
-  document.getElementById('reset').addEventListener('click', ()=>{ if(!spinning){ setAngle(0); hideResult(); stopTimer(); }});
-  document.getElementById('apply').addEventListener('click', ()=>{ items=readItems(); buildWheel(); setAngle(0); hideResult(); });
-  document.getElementById('invert').addEventListener('change', e=>{ invert=e.target.checked; buildWheel(); });
-  durSel.addEventListener('change', readDur);
+  document.getElementById('reset').addEventListener('click', ()=>{ setAngle(0); hideResult(); stopTimer(); });
+  document.getElementById('apply').addEventListener('click', ()=>{ saveLists(); buildWheel(); setAngle(0); hideResult(); });
+  document.getElementById('invert').addEventListener('change', e=>{ invert=e.target.checked; saveLists(); buildWheel(); });
+  durSel.addEventListener('change', ()=>{ readDur(); saveLists(); });
   tstart.addEventListener('click', startTimer);
   tstop.addEventListener('click', stopTimer);
+
+  nsfwToggle.addEventListener('click', ()=> setNSFW(!nsfw));
+  nsfwToggle.addEventListener('keydown', (e)=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); setNSFW(!nsfw); } });
 
   function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
   // Init
-  items = readItems(); buildWheel(); readDur();
+  loadLists();
+  buildWheel();
+  readDur();
 })();
 </script>
 </body>
