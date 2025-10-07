@@ -3,12 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Massage barrel – Roulette</title>
+<title>Massage barrel – Roulette (SVG)</title>
 
-<!-- PWA / iOS -->
-<meta name="theme-color" content="#0f1220" />
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0f1220" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -16,12 +15,10 @@
   :root{
     --rose:#ff5ca8; --bleu:#3fa7ff; --ink:#0b0b0f; --text:#eef2ff; --muted:#9aa3b2;
     --bg:#0b0f1a; --card:#12182a; --ring: rgba(255,255,255,.12);
-    --pad: max(16px, env(safe-area-inset-left));
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
   body{
-    margin:0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, Roboto, Segoe UI, Arial, sans-serif;
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,Roboto,Arial,sans-serif;
     color:var(--text);
     background:
       radial-gradient(1200px 800px at 80% -10%, #1e2746 0%, rgba(30,39,70,0) 60%),
@@ -29,76 +26,25 @@
       var(--bg);
     padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left);
   }
-
-  /* Conteneur responsive, plus aéré sur iPhone */
-  .wrap{width:min(980px, 100%); margin:0 auto; padding:12px}
-  .grid{display:grid; gap:14px; grid-template-columns: 1fr 340px}
-  @media (max-width: 880px){ .grid{grid-template-columns: 1fr} }
-
-  .card{
-    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    border: 1px solid var(--ring);
-    border-radius: 18px;
-    padding: clamp(12px, 2.8vw, 18px);
-    box-shadow: 0 10px 30px rgba(0,0,0,.35);
-  }
-
-  /* Titre “moins typographique classique”, style moderne avec dégradé */
-  h1{
-    margin:0 0 6px;
-    font-weight:800;
-    letter-spacing:.2px;
-    font-size: clamp(22px, 4.8vw, 32px);
-    line-height:1.15;
-    background: linear-gradient(90deg, var(--bleu), var(--rose));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  h2{margin:0 0 8px; font-size: clamp(16px, 3.4vw, 20px)}
-  .muted{color:var(--muted); font-size: clamp(13px, 3.2vw, 15px)}
-
-  /* Zone roue, boutons + gros pour iPhone */
-  .wheel-box{display:grid; place-items:center}
-  .pointer{
-    position:relative; width:0; height:0;
-    border-left:16px solid transparent; border-right:16px solid transparent; border-bottom:26px solid #ffd166;
-    margin: 2px 0 -8px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
-  }
-  canvas{
-    width: min(86vw, 560px); height: auto; display:block;
-    filter: drop-shadow(0 12px 24px rgba(0,0,0,.4));
-    transition: transform 5.2s cubic-bezier(.12,.65,.06,1);
-    touch-action: manipulation;
-  }
-  .controls{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px}
-  button{
-    appearance:none; border:1px solid var(--ring); background:#12162a; color:var(--text);
-    border-radius: 14px; padding: 12px 16px; font-weight:700; font-size: clamp(14px, 3.8vw, 16px);
-    cursor:pointer; min-width: 120px;
-  }
-  .primary{background: linear-gradient(135deg, var(--bleu), var(--rose)); color: var(--ink); border:none}
+  .wrap{width:min(980px,100%);margin:0 auto;padding:12px}
+  .grid{display:grid;gap:14px;grid-template-columns:1fr 340px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--ring);border-radius:18px;padding:clamp(12px,2.8vw,18px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  h1{margin:0 0 6px;font-weight:800;letter-spacing:.2px;font-size:clamp(22px,4.8vw,32px);line-height:1.15;background:linear-gradient(90deg,var(--bleu),var(--rose));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{margin:0 0 8px;font-size:clamp(16px,3.4vw,20px)}
+  .muted{color:var(--muted);font-size:clamp(13px,3.2vw,15px)}
+  .wheel-box{display:grid;place-items:center}
+  .pointer{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid #ffd166;margin:2px 0 -8px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+  svg{width:min(86vw,560px);height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.4));touch-action:manipulation}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+  button{appearance:none;border:1px solid var(--ring);background:#12162a;color:var(--text);border-radius:14px;padding:12px 16px;font-weight:700;font-size:clamp(14px,3.8vw,16px);min-width:120px;cursor:pointer}
+  .primary{background:linear-gradient(135deg,var(--bleu),var(--rose));color:var(--ink);border:none}
   button:active{transform:translateY(1px)}
-
-  textarea{
-    width:100%; min-height: 260px; resize: vertical;
-    border-radius:14px; padding:12px; line-height:1.5;
-    background:#0f1426; color:var(--text); border:1px solid var(--ring);
-    font-size: clamp(14px, 3.6vw, 15px);
-  }
-
-  .chip{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
-        background:rgba(255,255,255,.06); border:1px solid var(--ring); font-size: clamp(12px,3.2vw,14px)}
-  .swatch{width:14px; height:14px; border-radius:50%}
-
-  .result{
-    margin-top:10px; padding:12px; border-radius:14px;
-    background:rgba(255,255,255,.06); border:1px solid var(--ring);
-    font-size: clamp(14px, 3.6vw, 16px);
-  }
-
-  /* Accessibilité / confort */
-  @media (prefers-reduced-motion: reduce){
-    canvas{transition: none;}
-  }
+  textarea{width:100%;min-height:260px;resize:vertical;border-radius:14px;padding:12px;line-height:1.5;background:#0f1426;color:var(--text);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,15px)}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(12px,3.2vw,14px)}
+  .swatch{width:14px;height:14px;border-radius:50%}
+  .result{margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,16px);display:none}
+  @media (prefers-reduced-motion:reduce){.spin-anim{transition:none}}
 </style>
 </head>
 <body>
@@ -110,7 +56,17 @@
 
         <div class="wheel-box">
           <div class="pointer" aria-hidden="true"></div>
-          <canvas id="wheel" width="900" height="900" aria-label="Roue de massage"></canvas>
+
+          <!-- SVG WHEEL -->
+          <svg id="wheelSvg" viewBox="-500 -500 1000 1000" class="spin-anim" aria-label="Roue de massage">
+            <defs id="defs"></defs>
+            <g id="wheelGroup"></g>
+
+            <!-- hub -->
+            <circle r="140" fill="#fff"></circle>
+            <text x="0" y="-6" fill="#11131e" font-weight="800" font-size="64" text-anchor="middle" font-family="-apple-system,Inter,Roboto">Massage</text>
+            <text x="0" y="46" fill="#11131e" font-weight="800" font-size="40" text-anchor="middle" font-family="-apple-system,Inter,Roboto">barrel</text>
+          </svg>
 
           <div class="controls">
             <button id="spin" class="primary">🎡 Lancer</button>
@@ -122,7 +78,7 @@
             <span class="chip"><span class="swatch" style="background:var(--rose)"></span> Rose&nbsp;: <b>Julitou</b></span>
           </div>
 
-          <div id="out" class="result" style="display:none"></div>
+          <div id="out" class="result"></div>
         </div>
       </section>
 
@@ -156,19 +112,17 @@ Cuisses</textarea>
 (function(){
   const NAME_BLUE = "Baptistou";
   const NAME_ROSE = "Julitou";
+  const svg = document.getElementById('wheelSvg');
+  const defs = document.getElementById('defs');
+  const group = document.getElementById('wheelGroup');
 
   // PWA SW
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
-  }
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 
-  const c = document.getElementById('wheel');
-  const x = c.getContext('2d');
-  const dpr = window.devicePixelRatio||1;
   let items=[], invert=false, spinning=false, angle=0;
 
   function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
-  const COLORS = {rose: css('--rose'), bleu: css('--bleu')};
+  const COLORS = { rose: css('--rose'), bleu: css('--bleu') };
 
   function readItems(){
     const v = document.getElementById('items').value.split('\n').map(s=>s.trim()).filter(Boolean);
@@ -176,148 +130,159 @@ Cuisses</textarea>
   }
   function colorAt(i){ return (i%2===0) ^ invert ? COLORS.rose : COLORS.bleu; }
 
-  // Canvas HiDPI + taille mobile optimisée
-  function resize(){
-    const size = Math.min(c.parentElement.clientWidth, 560);
-    c.style.width = size+'px'; c.style.height = size+'px';
-    c.width = Math.round(size*dpr); c.height = Math.round(size*dpr);
-    draw();
-  }
+  // Build SVG wheel with curved text along arcs (crisp on iPhone)
+  function buildWheel(){
+    group.innerHTML = ''; defs.innerHTML = '';
+    const n = items.length;
+    const R = 480;     // outer radius
+    const Ri = 160;    // inner cut (near hub)
+    const Rt = 300;    // text radius (where textPath sits)
+    const sepColor = 'rgba(255,255,255,.2)';
+    for(let i=0;i<n;i++){
+      const a0 = -Math.PI/2 + i*(2*Math.PI/n);
+      const a1 = -Math.PI/2 + (i+1)*(2*Math.PI/n);
 
-  // —— Dessin avec meilleur fit du texte pour iPhone ——
-  function draw(){
-    const W=c.width,H=c.height,cx=W/2,cy=H/2;
-    const r=Math.min(W,H)/2 - 10*dpr;
-    const rin = r*0.26; // hub un peu plus petit -> + d'espace pour le texte
-    const seg = 2*Math.PI/items.length;
+      // slice path (sector)
+      const p = sectorPath(0,0,R,a0,a1);
+      const path = el('path',{d:p, fill:colorAt(i)});
+      group.appendChild(path);
 
-    x.clearRect(0,0,W,H);
+      // divider
+      const div = el('line',{
+        x1:0, y1:0, x2: R*Math.cos(a0), y2:R*Math.sin(a0),
+        stroke:sepColor, 'stroke-width':2
+      });
+      group.appendChild(div);
 
-    for(let i=0;i<items.length;i++){
-      const a0=-Math.PI/2+i*seg, a1=a0+seg;
-      // tranche
-      x.beginPath(); x.moveTo(cx,cy); x.arc(cx,cy,r,a0,a1); x.closePath();
-      x.fillStyle=colorAt(i); x.fill();
+      // arc path for text
+      const arcId = `arc-${i}`;
+      const arcD = arcPath(0,0,Rt,a0+0.08, a1-0.08); // inset a bit to avoid touching edges
+      const arc = el('path',{id:arcId, d:arcD, fill:'none'});
+      defs.appendChild(arc);
 
-      // —— Label : multi-lignes + auto-réduction + ellipse (mieux sur iPhone) ——
-      const mid=a0+seg/2;
-      x.save();
-      const radiusText = rin + (r-rin)*0.60;          // position du texte
-      x.translate(cx+Math.cos(mid)*radiusText, cy+Math.sin(mid)*radiusText);
-      x.rotate(mid+Math.PI/2);
-      x.fillStyle = '#0b0b0f';
+      // text on path (centered)
+      const txt = el('text', {
+        'font-family':'-apple-system, Inter, Roboto, Arial',
+        'fill':'#0b0b0f',
+        'font-weight':'700'
+      });
+      const tp = el('textPath',{
+        href:`#${arcId}`,
+        'startOffset':'50%',
+        'text-anchor':'middle'
+      }, sanitize(items[i]));
+      txt.appendChild(tp);
+      group.appendChild(txt);
 
-      // contraintes adaptatives (un poil plus strictes sur petits écrans)
-      const span = (r - rin);
-      const maxW = span * 0.92;
-      const maxH = span * 0.46; // autorise 2 lignes confort
-      let fs = Math.min(22, r*0.075) * dpr; // taille de départ
-      const minFs = 9.5 * dpr;
-
-      function wrapLines(txt, maxWidth){
-        const words = txt.split(/\s+/);
-        const lines = [];
-        let line = "";
-        for (const w of words){
-          const test = line ? line + " " + w : w;
-          if (x.measureText(test).width <= maxWidth) line = test;
-          else { if (line) lines.push(line); line = w; }
-        }
-        if (line) lines.push(line);
-        if (lines.length > 2){ // condense
-          const rest = lines.slice(1).join(' ');
-          lines.length = 1; lines.push(rest);
-        }
-        return lines;
-      }
-
-      let lines;
-      do{
-        x.font = `${fs}px -apple-system, Segoe UI, Inter, Roboto, Arial`;
-        lines = wrapLines(items[i], maxW);
-        const lh = fs*1.08;
-        const totalH = lines.length * lh;
-        const tooWide = lines.some(t => x.measureText(t).width > maxW);
-        if ((totalH > maxH || tooWide) && fs > minFs) fs -= 1*dpr; else break;
-      }while(true);
-
-      // ellipse si encore trop long
-      for (let j=0;j<lines.length;j++){
-        while (x.measureText(lines[j]).width > maxW && fs > minFs){
-          lines[j] = lines[j].slice(0,-1);
-        }
-        if (j===lines.length-1){
-          const full = items[i];
-          const joined = lines.join(' ');
-          if (full.length > joined.length && x.measureText(lines[j] + "…").width <= maxW){
-            lines[j] += "…";
-          }
-        }
-      }
-
-      // rendu lignes centrées
-      x.textAlign='center'; x.textBaseline='middle';
-      const lh = fs*1.08;
-      for (let k=0;k<lines.length;k++){
-        const y = (k - (lines.length-1)/2) * lh;
-        x.fillText(lines[k], 0, y);
-      }
-      x.restore();
-
-      // séparateur
-      x.strokeStyle='rgba(255,255,255,.15)'; x.lineWidth=2*dpr;
-      x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx+Math.cos(a0)*r, cy+Math.sin(a0)*r); x.stroke();
+      // fit text: shrink font and ellipsize to fit arc length
+      fitTextOnPath(txt, tp, arc, 22, 10);
     }
 
-    // moyeu
-    x.beginPath(); x.arc(cx,cy,rin,0,Math.PI*2); x.fillStyle='#fff'; x.fill();
-    x.fillStyle='#11131e';
-    x.font=`${Math.max(12, r*0.085)*dpr}px 800 -apple-system, Inter, Segoe UI`;
-    x.textAlign='center'; x.textBaseline='middle';
-    x.fillText('Massage barrel', cx, cy);
+    // final divider to close
+    const aEnd = -Math.PI/2 + n*(2*Math.PI/n);
+    group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(aEnd),y2:R*Math.sin(aEnd),stroke:sepColor,'stroke-width':2}) );
   }
 
-  function setAngle(deg){ angle=deg; c.style.transform = `rotate(${deg}deg)`; }
+  // Utilities to create SVG elements
+  function el(name, attrs={}, text){
+    const e = document.createElementNS('http://www.w3.org/2000/svg', name);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    if(text!=null) e.textContent = text;
+    return e;
+  }
 
+  // Sector path (pie slice)
+  function sectorPath(cx,cy,r,a0,a1){
+    const x0 = cx + r*Math.cos(a0), y0 = cy + r*Math.sin(a0);
+    const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
+    const large = (a1-a0) % (2*Math.PI) > Math.PI ? 1 : 0;
+    return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`;
+  }
+
+  // Arc path for text
+  function arcPath(cx,cy,r,a0,a1){
+    const x0 = cx + r*Math.cos(a0), y0 = cy + r*Math.sin(a0);
+    const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
+    const large = (a1-a0) % (2*Math.PI) > Math.PI ? 1 : 0;
+    return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;
+  }
+
+  // Measure arc length (approx via SVGPathElement.getTotalLength)
+  function arcLength(pathEl){ try{ return pathEl.getTotalLength(); } catch{ return 0; } }
+
+  // Fit text: reduce font-size and add ellipsis to match available arc length
+  function fitTextOnPath(textEl, textPathEl, arcEl, maxFs, minFs){
+    const avail = arcLength(arcEl) * 0.9; // keep some padding
+    let fs = maxFs;
+    textEl.setAttribute('font-size', fs);
+
+    // helper to compute current text length
+    const getLen = ()=> textEl.getComputedTextLength ? textEl.getComputedTextLength() : (textEl.textContent.length*fs*0.6);
+
+    // shrink until length fits or min
+    while (getLen() > avail && fs > minFs){
+      fs -= 1;
+      textEl.setAttribute('font-size', fs);
+    }
+    // if still too long, ellipsize
+    if (getLen() > avail){
+      let s = textPathEl.textContent;
+      while (s.length>2 && getLen() > avail){
+        s = s.slice(0, -1);
+        textPathEl.textContent = s + '…';
+      }
+    }
+  }
+
+  function sanitize(s){ return s.replace(/[\u0000-\u001F<>]/g,'').trim(); }
+
+  // Spin (rotate the whole group)
+  function setAngle(deg){ angle = deg; svg.style.transform = `rotate(${deg}deg)`; svg.style.transformOrigin = '50% 50%'; }
   function spin(){
-    if(spinning) return; spinning=true; document.getElementById('out').style.display='none';
-    const n=items.length, seg=360/n, idx=Math.floor(Math.random()*n), center=idx*seg+seg/2;
+    if(spinning) return; spinning = true; document.getElementById('out').style.display='none';
+    const n = items.length; const seg = 360/n;
+    const idx = Math.floor(Math.random()*n); const center = idx*seg + seg/2;
     const turns = 5 + Math.floor(Math.random()*3);
     const final = turns*360 + (360 - center);
-    const jitter=(Math.random()-0.5)*6;
+    const jitter = (Math.random()-0.5)*6;
 
-    c.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)'; void c.offsetWidth; setAngle(final+jitter);
+    svg.style.transition = 'transform 5.2s cubic-bezier(.12,.65,.06,1)';
+    void svg.offsetWidth; setAngle(final + jitter);
 
-    const end=()=>{
-      c.removeEventListener('transitionend',end);
-      c.style.transition='transform .001s linear'; setAngle(final);
-      setTimeout(()=> c.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
+    const end = ()=>{
+      svg.removeEventListener('transitionend', end);
+      svg.style.transition = 'transform .001s linear';
+      setAngle(final);
+      setTimeout(()=> svg.style.transition = 'transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
 
       const col = colorAt(idx), part = items[idx];
-      const isBlue = col.toLowerCase() === css('--bleu').toLowerCase();
+      const isBlue = col.toLowerCase() === COLORS.bleu.toLowerCase();
       const out = document.getElementById('out');
       out.style.display='block';
-      out.innerHTML = `<b>${isBlue ? "Baptistou" : "Julitou"}</b> masse <b>${escapeHtml(part)}</b> — `
+      out.innerHTML = `<b>${isBlue ? NAME_BLUE : NAME_ROSE}</b> masse <b>${escapeHtml(part)}</b> — `
         + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
-      // petite vibration (iOS la réduit)
       if (navigator.vibrate) navigator.vibrate(10);
       spinning=false;
     };
-    c.addEventListener('transitionend', end);
+    svg.addEventListener('transitionend', end);
   }
 
   function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-  function apply(){ items=readItems(); draw(); setAngle(0); document.getElementById('out').style.display='none'; }
 
-  // Événements
-  window.addEventListener('resize', resize, {passive:true});
+  function apply(){
+    items = readItems();
+    buildWheel();
+    setAngle(0);
+    document.getElementById('out').style.display='none';
+  }
+
   document.getElementById('spin').addEventListener('click', spin);
   document.getElementById('reset').addEventListener('click', ()=>{ if(!spinning){ setAngle(0); document.getElementById('out').style.display='none'; }});
   document.getElementById('apply').addEventListener('click', apply);
-  document.getElementById('invert').addEventListener('change', e=>{ invert=e.target.checked; draw(); });
+  document.getElementById('invert').addEventListener('change', e=>{ invert = e.target.checked; buildWheel(); });
 
-  // Init
-  items = readItems(); resize();
+  items = readItems();
+  buildWheel();
 })();
 </script>
 </body>
