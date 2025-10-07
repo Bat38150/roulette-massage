@@ -1,0 +1,11 @@
+{
+  "name": "Massage barrel",
+  "short_name": "Massage",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1220",
+  "theme_color": "#11131e",
+  "description": "Roulette massage rose/bleu — Bleu: Baptistou, Rose: Julitou",
+  "icons": []
+}
