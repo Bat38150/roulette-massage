@@ -187,7 +187,7 @@ select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-
       const a0=-Math.PI/2+i*(2*Math.PI/n),a1=-Math.PI/2+(i+1)*(2*Math.PI/n);
       group.appendChild(el("path",{d:sector(R,a0,a1),fill:colorAt(i)}));
       const arcId=`a${i}`,p=el("path",{id:arcId,d:arc(Rt,a0+0.08,a1-0.08),fill:"none"});group.appendChild(p);
-      const txt=el("text",{"font-size":nsfw?"26":"26","fill":nsfw?"#fff":"#0b0b0f","font-weight":"700","font-family":"Inter"});
+      const txt=el("text",{"font-size":nsfw?"30":"30","fill":nsfw?"#fff":"#0b0b0f","font-weight":"700","font-family":"Inter"});
       const tp=el("textPath",{href:`#${arcId}`,"startOffset":"50%","text-anchor":"middle"},items[i].label);
       txt.appendChild(tp);group.appendChild(txt);
     }
