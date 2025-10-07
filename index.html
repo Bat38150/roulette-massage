@@ -27,7 +27,7 @@
     padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left);
   }
   .wrap{width:min(980px,100%);margin:0 auto;padding:12px}
-  .grid{display:grid;gap:14px;grid-template-columns:1fr 340px}
+  .grid{display:grid;gap:14px;grid-template-columns:1fr 360px}
   @media (max-width:880px){.grid{grid-template-columns:1fr}}
   .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--ring);border-radius:18px;padding:clamp(12px,2.8vw,18px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
   h1{margin:0 0 6px;font-weight:800;letter-spacing:.2px;font-size:clamp(22px,4.8vw,32px);line-height:1.15;background:linear-gradient(90deg,var(--bleu),var(--rose));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -44,6 +44,9 @@
   .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(12px,3.2vw,14px)}
   .swatch{width:14px;height:14px;border-radius:50%}
   .result{margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,16px);display:none}
+  .timer{display:none;margin-top:8px;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .timer .display{font-variant-numeric:tabular-nums;font-weight:800;padding:6px 10px;border-radius:10px;border:1px solid var(--ring);background:rgba(255,255,255,.06)}
+  select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-radius:10px;padding:10px 12px}
   @media (prefers-reduced-motion:reduce){.spin-anim{transition:none}}
 </style>
 </head>
@@ -79,6 +82,22 @@
           </div>
 
           <div id="out" class="result"></div>
+
+          <!-- Minuteur -->
+          <div class="timer" id="timerRow">
+            <label class="muted">Durée
+              <select id="dur">
+                <option value="120">2 min</option>
+                <option value="180">3 min</option>
+                <option value="300" selected>5 min</option>
+                <option value="600">10 min</option>
+              </select>
+            </label>
+            <span class="display" id="tdisp">05:00</span>
+            <button id="tstart" class="primary">▶︎ Démarrer</button>
+            <button id="tstop">■ Stop</button>
+            <label class="muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="autoStart" checked> Auto au tirage</label>
+          </div>
         </div>
       </section>
 
@@ -92,7 +111,7 @@ Bras
 Mains
 Pieds
 Jambes
-Tempes
+Sexe
 Visage
 Tête
 Mollets
@@ -121,6 +140,15 @@ Cuisses</textarea>
 
   let items=[], invert=false, spinning=false, angle=0;
 
+  // ===== Timer state =====
+  let timerId=null, remaining=300; // 5 min par défaut
+  const durSel = document.getElementById('dur');
+  const tdisp  = document.getElementById('tdisp');
+  const tstart = document.getElementById('tstart');
+  const tstop  = document.getElementById('tstop');
+  const trow   = document.getElementById('timerRow');
+  const autoStart = document.getElementById('autoStart');
+
   function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
   const COLORS = { rose: css('--rose'), bleu: css('--bleu') };
 
@@ -130,159 +158,126 @@ Cuisses</textarea>
   }
   function colorAt(i){ return (i%2===0) ^ invert ? COLORS.rose : COLORS.bleu; }
 
-  // Build SVG wheel with curved text along arcs (crisp on iPhone)
+  // ===== SVG wheel =====
   function buildWheel(){
     group.innerHTML = ''; defs.innerHTML = '';
     const n = items.length;
     const R = 480;     // outer radius
-    const Ri = 160;    // inner cut (near hub)
-    const Rt = 300;    // text radius (where textPath sits)
+    const Rt = 300;    // text radius
     const sepColor = 'rgba(255,255,255,.2)';
     for(let i=0;i<n;i++){
       const a0 = -Math.PI/2 + i*(2*Math.PI/n);
       const a1 = -Math.PI/2 + (i+1)*(2*Math.PI/n);
 
-      // slice path (sector)
-      const p = sectorPath(0,0,R,a0,a1);
-      const path = el('path',{d:p, fill:colorAt(i)});
-      group.appendChild(path);
-
+      // slice
+      group.appendChild( el('path',{d:sectorPath(0,0,R,a0,a1), fill:colorAt(i)}) );
       // divider
-      const div = el('line',{
-        x1:0, y1:0, x2: R*Math.cos(a0), y2:R*Math.sin(a0),
-        stroke:sepColor, 'stroke-width':2
-      });
-      group.appendChild(div);
+      group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(a0),y2:R*Math.sin(a0),stroke:sepColor,'stroke-width':2}) );
 
-      // arc path for text
+      // text arc
       const arcId = `arc-${i}`;
-      const arcD = arcPath(0,0,Rt,a0+0.08, a1-0.08); // inset a bit to avoid touching edges
-      const arc = el('path',{id:arcId, d:arcD, fill:'none'});
-      defs.appendChild(arc);
+      defs.appendChild( el('path',{id:arcId, d:arcPath(0,0,Rt,a0+0.08, a1-0.08), fill:'none'}) );
 
-      // text on path (centered)
-      const txt = el('text', {
-        'font-family':'-apple-system, Inter, Roboto, Arial',
-        'fill':'#0b0b0f',
-        'font-weight':'700'
-      });
-      const tp = el('textPath',{
-        href:`#${arcId}`,
-        'startOffset':'50%',
-        'text-anchor':'middle'
-      }, sanitize(items[i]));
-      txt.appendChild(tp);
-      group.appendChild(txt);
+      // text on arc
+      const txt = el('text', {'font-family':'-apple-system, Inter, Roboto, Arial','fill':'#0b0b0f','font-weight':'700'});
+      const tp  = el('textPath',{href:`#${arcId}`,'startOffset':'50%','text-anchor':'middle'}, sanitize(items[i]));
+      txt.appendChild(tp); group.appendChild(txt);
 
-      // fit text: shrink font and ellipsize to fit arc length
-      fitTextOnPath(txt, tp, arc, 22, 10);
+      fitTextOnPath(txt, tp, defs.lastChild, 22, 10);
     }
-
-    // final divider to close
+    // close divider
     const aEnd = -Math.PI/2 + n*(2*Math.PI/n);
     group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(aEnd),y2:R*Math.sin(aEnd),stroke:sepColor,'stroke-width':2}) );
   }
 
-  // Utilities to create SVG elements
-  function el(name, attrs={}, text){
-    const e = document.createElementNS('http://www.w3.org/2000/svg', name);
-    for(const k in attrs) e.setAttribute(k, attrs[k]);
-    if(text!=null) e.textContent = text;
-    return e;
-  }
-
-  // Sector path (pie slice)
-  function sectorPath(cx,cy,r,a0,a1){
-    const x0 = cx + r*Math.cos(a0), y0 = cy + r*Math.sin(a0);
-    const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
-    const large = (a1-a0) % (2*Math.PI) > Math.PI ? 1 : 0;
-    return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`;
-  }
-
-  // Arc path for text
-  function arcPath(cx,cy,r,a0,a1){
-    const x0 = cx + r*Math.cos(a0), y0 = cy + r*Math.sin(a0);
-    const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
-    const large = (a1-a0) % (2*Math.PI) > Math.PI ? 1 : 0;
-    return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;
-  }
-
-  // Measure arc length (approx via SVGPathElement.getTotalLength)
+  function el(name, attrs={}, text){ const e=document.createElementNS('http://www.w3.org/2000/svg', name); for(const k in attrs) e.setAttribute(k, attrs[k]); if(text!=null) e.textContent=text; return e; }
+  function sectorPath(cx,cy,r,a0,a1){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1); const large=(a1-a0)%(2*Math.PI)>Math.PI?1:0; return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`; }
+  function arcPath(cx,cy,r,a0,a1){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1); const large=(a1-a0)%(2*Math.PI)>Math.PI?1:0; return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`; }
   function arcLength(pathEl){ try{ return pathEl.getTotalLength(); } catch{ return 0; } }
-
-  // Fit text: reduce font-size and add ellipsis to match available arc length
-  function fitTextOnPath(textEl, textPathEl, arcEl, maxFs, minFs){
-    const avail = arcLength(arcEl) * 0.9; // keep some padding
-    let fs = maxFs;
-    textEl.setAttribute('font-size', fs);
-
-    // helper to compute current text length
-    const getLen = ()=> textEl.getComputedTextLength ? textEl.getComputedTextLength() : (textEl.textContent.length*fs*0.6);
-
-    // shrink until length fits or min
-    while (getLen() > avail && fs > minFs){
-      fs -= 1;
-      textEl.setAttribute('font-size', fs);
-    }
-    // if still too long, ellipsize
-    if (getLen() > avail){
-      let s = textPathEl.textContent;
-      while (s.length>2 && getLen() > avail){
-        s = s.slice(0, -1);
-        textPathEl.textContent = s + '…';
-      }
-    }
-  }
-
   function sanitize(s){ return s.replace(/[\u0000-\u001F<>]/g,'').trim(); }
 
-  // Spin (rotate the whole group)
-  function setAngle(deg){ angle = deg; svg.style.transform = `rotate(${deg}deg)`; svg.style.transformOrigin = '50% 50%'; }
+  function fitTextOnPath(textEl, textPathEl, arcEl, maxFs, minFs){
+    const avail = arcLength(arcEl) * 0.9;
+    let fs = maxFs; textEl.setAttribute('font-size', fs);
+    const getLen = ()=> textEl.getComputedTextLength ? textEl.getComputedTextLength() : (textEl.textContent.length*fs*0.6);
+    while(getLen()>avail && fs>minFs){ fs--; textEl.setAttribute('font-size', fs); }
+    if (getLen()>avail){
+      let s = textPathEl.textContent;
+      while(s.length>2 && getLen()>avail){ s = s.slice(0,-1); textPathEl.textContent = s + '…'; }
+    }
+  }
+
+  // ===== Spin =====
+  function setAngle(deg){ angle=deg; svg.style.transform=`rotate(${deg}deg)`; svg.style.transformOrigin='50% 50%'; }
   function spin(){
-    if(spinning) return; spinning = true; document.getElementById('out').style.display='none';
-    const n = items.length; const seg = 360/n;
-    const idx = Math.floor(Math.random()*n); const center = idx*seg + seg/2;
-    const turns = 5 + Math.floor(Math.random()*3);
-    const final = turns*360 + (360 - center);
-    const jitter = (Math.random()-0.5)*6;
+    if(spinning) return; spinning = true; hideResult(); stopTimer();
+    const n=items.length, seg=360/n, idx=Math.floor(Math.random()*n), center=idx*seg+seg/2;
+    const turns=5+Math.floor(Math.random()*3), final=turns*360+(360-center), jitter=(Math.random()-0.5)*6;
 
-    svg.style.transition = 'transform 5.2s cubic-bezier(.12,.65,.06,1)';
-    void svg.offsetWidth; setAngle(final + jitter);
+    svg.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)'; void svg.offsetWidth; setAngle(final+jitter);
 
-    const end = ()=>{
-      svg.removeEventListener('transitionend', end);
-      svg.style.transition = 'transform .001s linear';
-      setAngle(final);
-      setTimeout(()=> svg.style.transition = 'transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
+    const end=()=>{
+      svg.removeEventListener('transitionend',end);
+      svg.style.transition='transform .001s linear'; setAngle(final);
+      setTimeout(()=> svg.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
 
-      const col = colorAt(idx), part = items[idx];
-      const isBlue = col.toLowerCase() === COLORS.bleu.toLowerCase();
-      const out = document.getElementById('out');
-      out.style.display='block';
-      out.innerHTML = `<b>${isBlue ? NAME_BLUE : NAME_ROSE}</b> masse <b>${escapeHtml(part)}</b> — `
-        + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
+      const col=colorAt(idx), part=items[idx], isBlue=(col.toLowerCase()===COLORS.bleu.toLowerCase());
+      showResult(isBlue, part);
       if (navigator.vibrate) navigator.vibrate(10);
+      if (autoStart.checked) { startTimer(); }
       spinning=false;
     };
     svg.addEventListener('transitionend', end);
   }
 
-  function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  // ===== Result helpers =====
+  const out = document.getElementById('out');
+  function showResult(isBlue, part){
+    out.style.display='block';
+    out.innerHTML = `<b>${isBlue ? NAME_BLUE : NAME_ROSE}</b> masse <b>${escapeHtml(part)}</b> — `
+      + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
+    trow.style.display='flex';
+  }
+  function hideResult(){ out.style.display='none'; }
 
-  function apply(){
-    items = readItems();
-    buildWheel();
-    setAngle(0);
-    document.getElementById('out').style.display='none';
+  // ===== Timer logic =====
+  function format(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=(s%60).toString().padStart(2,'0'); return `${m}:${ss}`; }
+  function readDur(){ remaining = parseInt(durSel.value,10)||300; tdisp.textContent = format(remaining); }
+  function tick(){
+    remaining--;
+    if (remaining<=0){ tdisp.textContent = '00:00'; stopTimer(); chime(); if (navigator.vibrate) navigator.vibrate([20,40,20]); return; }
+    tdisp.textContent = format(remaining);
+  }
+  function startTimer(){ readDur(); stopTimer(); timerId = setInterval(tick, 1000); }
+  function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+
+  // Petit “ding” WebAudio
+  function chime(){
+    try{
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type='sine'; o.frequency.value=880; g.gain.value=0.0001;
+      o.connect(g); g.connect(ctx.destination); o.start();
+      // vol montée/descente
+      g.gain.exponentialRampToValueAtTime(0.1, ctx.currentTime+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.35);
+      o.stop(ctx.currentTime+0.4);
+    }catch(e){}
   }
 
+  // ===== Events =====
   document.getElementById('spin').addEventListener('click', spin);
-  document.getElementById('reset').addEventListener('click', ()=>{ if(!spinning){ setAngle(0); document.getElementById('out').style.display='none'; }});
-  document.getElementById('apply').addEventListener('click', apply);
-  document.getElementById('invert').addEventListener('change', e=>{ invert = e.target.checked; buildWheel(); });
+  document.getElementById('reset').addEventListener('click', ()=>{ if(!spinning){ setAngle(0); hideResult(); stopTimer(); }});
+  document.getElementById('apply').addEventListener('click', ()=>{ items=readItems(); buildWheel(); setAngle(0); hideResult(); });
+  document.getElementById('invert').addEventListener('change', e=>{ invert=e.target.checked; buildWheel(); });
+  durSel.addEventListener('change', readDur);
+  tstart.addEventListener('click', startTimer);
+  tstop.addEventListener('click', stopTimer);
 
-  items = readItems();
-  buildWheel();
+  function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+  // Init
+  items = readItems(); buildWheel(); readDur();
 })();
 </script>
 </body>
