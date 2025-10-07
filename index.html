@@ -2,38 +2,103 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Massage barrel – Roulette</title>
 
-<!-- PWA: iOS & Android -->
-<meta name="theme-color" content="#11131e" />
+<!-- PWA / iOS -->
+<meta name="theme-color" content="#0f1220" />
 <link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<!-- Optionnel : si tu ajoutes plus tard une icône PNG 180x180, décommente la ligne ci-dessous et pointe vers ton fichier -->
-<!-- <link rel="apple-touch-icon" href="./icons/apple-touch-icon-180.png"> -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
-  :root{ --rose:#ff5ca8; --bleu:#3fa7ff; --bg:#0f1220; --text:#f5f7ff; }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,Segoe UI,Inter,Roboto,Arial,sans-serif;background:#0f1220;color:#f5f7ff;display:grid;place-items:center;min-height:100vh;padding:16px}
-  .wrap{width:min(920px,95vw);display:grid;gap:16px}
-  .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px}
-  h1{margin:0 0 8px;font-size:1.25rem}
-  .grid{display:grid;gap:16px;grid-template-columns:1fr 320px}
-  @media (max-width:880px){.grid{grid-template-columns:1fr}}
-  .wheel-box{display:grid;place-items:center}
-  .pointer{position:relative;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #ffd166;margin-bottom:-8px;z-index:2}
-  canvas{width:min(560px,90vw);height:auto;display:block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.4));transition:transform 5.2s cubic-bezier(.12,.65,.06,1)}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
-  button{cursor:pointer;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:#12162a;color:var(--text);padding:10px 14px;font-weight:600}
-  .primary{background:linear-gradient(135deg,var(--bleu),var(--rose));color:#0b0b0f;border:none}
-  textarea{width:100%;min-height:240px;border-radius:10px;background:#0e1120;color:var(--text);border:1px solid rgba(255,255,255,.15);padding:10px;line-height:1.5}
-  .small{opacity:.8;font-size:.9rem}
-  .result{margin-top:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:none}
-  label{display:flex;gap:8px;align-items:center}
-  .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
-  .swatch{width:14px;height:14px;border-radius:50%}
+  :root{
+    --rose:#ff5ca8; --bleu:#3fa7ff; --ink:#0b0b0f; --text:#eef2ff; --muted:#9aa3b2;
+    --bg:#0b0f1a; --card:#12182a; --ring: rgba(255,255,255,.12);
+    --pad: max(16px, env(safe-area-inset-left));
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, Roboto, Segoe UI, Arial, sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 800px at 80% -10%, #1e2746 0%, rgba(30,39,70,0) 60%),
+      radial-gradient(900px 600px at 0% 100%, #242a4a 0%, rgba(36,42,74,0) 55%),
+      var(--bg);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left);
+  }
+
+  /* Conteneur responsive, plus aéré sur iPhone */
+  .wrap{width:min(980px, 100%); margin:0 auto; padding:12px}
+  .grid{display:grid; gap:14px; grid-template-columns: 1fr 340px}
+  @media (max-width: 880px){ .grid{grid-template-columns: 1fr} }
+
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border: 1px solid var(--ring);
+    border-radius: 18px;
+    padding: clamp(12px, 2.8vw, 18px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  /* Titre “moins typographique classique”, style moderne avec dégradé */
+  h1{
+    margin:0 0 6px;
+    font-weight:800;
+    letter-spacing:.2px;
+    font-size: clamp(22px, 4.8vw, 32px);
+    line-height:1.15;
+    background: linear-gradient(90deg, var(--bleu), var(--rose));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  h2{margin:0 0 8px; font-size: clamp(16px, 3.4vw, 20px)}
+  .muted{color:var(--muted); font-size: clamp(13px, 3.2vw, 15px)}
+
+  /* Zone roue, boutons + gros pour iPhone */
+  .wheel-box{display:grid; place-items:center}
+  .pointer{
+    position:relative; width:0; height:0;
+    border-left:16px solid transparent; border-right:16px solid transparent; border-bottom:26px solid #ffd166;
+    margin: 2px 0 -8px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
+  }
+  canvas{
+    width: min(86vw, 560px); height: auto; display:block;
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,.4));
+    transition: transform 5.2s cubic-bezier(.12,.65,.06,1);
+    touch-action: manipulation;
+  }
+  .controls{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px}
+  button{
+    appearance:none; border:1px solid var(--ring); background:#12162a; color:var(--text);
+    border-radius: 14px; padding: 12px 16px; font-weight:700; font-size: clamp(14px, 3.8vw, 16px);
+    cursor:pointer; min-width: 120px;
+  }
+  .primary{background: linear-gradient(135deg, var(--bleu), var(--rose)); color: var(--ink); border:none}
+  button:active{transform:translateY(1px)}
+
+  textarea{
+    width:100%; min-height: 260px; resize: vertical;
+    border-radius:14px; padding:12px; line-height:1.5;
+    background:#0f1426; color:var(--text); border:1px solid var(--ring);
+    font-size: clamp(14px, 3.6vw, 15px);
+  }
+
+  .chip{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
+        background:rgba(255,255,255,.06); border:1px solid var(--ring); font-size: clamp(12px,3.2vw,14px)}
+  .swatch{width:14px; height:14px; border-radius:50%}
+
+  .result{
+    margin-top:10px; padding:12px; border-radius:14px;
+    background:rgba(255,255,255,.06); border:1px solid var(--ring);
+    font-size: clamp(14px, 3.6vw, 16px);
+  }
+
+  /* Accessibilité / confort */
+  @media (prefers-reduced-motion: reduce){
+    canvas{transition: none;}
+  }
 </style>
 </head>
 <body>
@@ -41,25 +106,29 @@
     <div class="grid">
       <section class="card">
         <h1>Massage barrel</h1>
-        <p class="small">Bleu = <b>Baptistou masse</b>, Rose = <b>Julitou masse</b>. Clique sur <b>Lancer</b>.</p>
+        <p class="muted">Bleu = <b>Baptistou masse</b>, Rose = <b>Julitou masse</b>. Clique sur <b>Lancer</b>.</p>
+
         <div class="wheel-box">
           <div class="pointer" aria-hidden="true"></div>
           <canvas id="wheel" width="900" height="900" aria-label="Roue de massage"></canvas>
+
           <div class="controls">
             <button id="spin" class="primary">🎡 Lancer</button>
             <button id="reset">↺ Réinitialiser</button>
           </div>
-          <div class="controls" style="margin-top:4px">
+
+          <div class="controls" style="margin-top:2px">
             <span class="chip"><span class="swatch" style="background:var(--bleu)"></span> Bleu&nbsp;: <b>Baptistou</b></span>
             <span class="chip"><span class="swatch" style="background:var(--rose)"></span> Rose&nbsp;: <b>Julitou</b></span>
           </div>
-          <div id="out" class="result"></div>
+
+          <div id="out" class="result" style="display:none"></div>
         </div>
       </section>
 
       <aside class="card">
-        <h2 style="margin:0 0 8px">Parties du corps</h2>
-        <p class="small">Une par ligne. Clique <b>Actualiser</b>.</p>
+        <h2>Parties du corps</h2>
+        <p class="muted">Une par ligne. Appuie sur <b>Actualiser</b>.</p>
         <textarea id="items">Épaules
 Nuque
 Dos
@@ -72,9 +141,12 @@ Visage
 Tête
 Mollets
 Cuisses</textarea>
+
         <div class="controls" style="justify-content:space-between">
           <button id="apply">Actualiser</button>
-          <label><input type="checkbox" id="invert"> Inverser rose/bleu</label>
+          <label class="muted" style="display:flex;gap:8px;align-items:center">
+            <input id="invert" type="checkbox"> Inverser rose/bleu
+          </label>
         </div>
       </aside>
     </div>
@@ -85,17 +157,15 @@ Cuisses</textarea>
   const NAME_BLUE = "Baptistou";
   const NAME_ROSE = "Julitou";
 
-  // PWA: enregistre le Service Worker (scope = /roulette-massage/)
+  // PWA SW
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js');
-    });
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
   }
 
   const c = document.getElementById('wheel');
   const x = c.getContext('2d');
   const dpr = window.devicePixelRatio||1;
-  let items = [], invert=false, spinning=false, angle=0;
+  let items=[], invert=false, spinning=false, angle=0;
 
   function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
   const COLORS = {rose: css('--rose'), bleu: css('--bleu')};
@@ -104,8 +174,9 @@ Cuisses</textarea>
     const v = document.getElementById('items').value.split('\n').map(s=>s.trim()).filter(Boolean);
     return v.length>=2 ? v : ['A','B'];
   }
-  function colorAt(i){return (i%2===0) ^ invert ? COLORS.rose : COLORS.bleu;}
+  function colorAt(i){ return (i%2===0) ^ invert ? COLORS.rose : COLORS.bleu; }
 
+  // Canvas HiDPI + taille mobile optimisée
   function resize(){
     const size = Math.min(c.parentElement.clientWidth, 560);
     c.style.width = size+'px'; c.style.height = size+'px';
@@ -113,9 +184,13 @@ Cuisses</textarea>
     draw();
   }
 
+  // —— Dessin avec meilleur fit du texte pour iPhone ——
   function draw(){
-    const W=c.width,H=c.height,cx=W/2,cy=H/2,r=Math.min(W,H)/2-8*dpr,rin=r*0.28;
+    const W=c.width,H=c.height,cx=W/2,cy=H/2;
+    const r=Math.min(W,H)/2 - 10*dpr;
+    const rin = r*0.26; // hub un peu plus petit -> + d'espace pour le texte
     const seg = 2*Math.PI/items.length;
+
     x.clearRect(0,0,W,H);
 
     for(let i=0;i<items.length;i++){
@@ -124,17 +199,20 @@ Cuisses</textarea>
       x.beginPath(); x.moveTo(cx,cy); x.arc(cx,cy,r,a0,a1); x.closePath();
       x.fillStyle=colorAt(i); x.fill();
 
-      // libellé : ajustement auto (réduction + wrap 2 lignes max + ellipse)
+      // —— Label : multi-lignes + auto-réduction + ellipse (mieux sur iPhone) ——
       const mid=a0+seg/2;
       x.save();
-      const radiusText = rin + (r-rin)*0.62;
+      const radiusText = rin + (r-rin)*0.60;          // position du texte
       x.translate(cx+Math.cos(mid)*radiusText, cy+Math.sin(mid)*radiusText);
       x.rotate(mid+Math.PI/2);
-      x.fillStyle='#0b0b0f';
-      const maxW = (r - rin) * 0.9;        // largeur max
-      const maxH = (r - rin) * 0.40;       // hauteur max pour 2 lignes
-      let fs = Math.min(22, r*0.07) * dpr; // base
-      const minFs = 10*dpr;
+      x.fillStyle = '#0b0b0f';
+
+      // contraintes adaptatives (un poil plus strictes sur petits écrans)
+      const span = (r - rin);
+      const maxW = span * 0.92;
+      const maxH = span * 0.46; // autorise 2 lignes confort
+      let fs = Math.min(22, r*0.075) * dpr; // taille de départ
+      const minFs = 9.5 * dpr;
 
       function wrapLines(txt, maxWidth){
         const words = txt.split(/\s+/);
@@ -142,11 +220,11 @@ Cuisses</textarea>
         let line = "";
         for (const w of words){
           const test = line ? line + " " + w : w;
-          if (x.measureText(test).width <= maxWidth) { line = test; }
+          if (x.measureText(test).width <= maxWidth) line = test;
           else { if (line) lines.push(line); line = w; }
         }
         if (line) lines.push(line);
-        if (lines.length > 2) { // compacte les surplus sur 2ème ligne
+        if (lines.length > 2){ // condense
           const rest = lines.slice(1).join(' ');
           lines.length = 1; lines.push(rest);
         }
@@ -155,26 +233,31 @@ Cuisses</textarea>
 
       let lines;
       do{
-        x.font=`${fs}px system-ui,Segoe UI,Inter,Roboto,Arial`;
+        x.font = `${fs}px -apple-system, Segoe UI, Inter, Roboto, Arial`;
         lines = wrapLines(items[i], maxW);
-        const lineHeight = fs*1.1;
-        const totalH = lines.length * lineHeight;
+        const lh = fs*1.08;
+        const totalH = lines.length * lh;
         const tooWide = lines.some(t => x.measureText(t).width > maxW);
         if ((totalH > maxH || tooWide) && fs > minFs) fs -= 1*dpr; else break;
       }while(true);
 
+      // ellipse si encore trop long
       for (let j=0;j<lines.length;j++){
         while (x.measureText(lines[j]).width > maxW && fs > minFs){
-          lines[j] = lines[j].slice(0, -1);
+          lines[j] = lines[j].slice(0,-1);
         }
-        const original = items[i];
-        if (x.measureText(lines[j] + "…").width <= maxW && j===lines.length-1 && original.length>lines.join(' ').length){
-          lines[j] += "…";
+        if (j===lines.length-1){
+          const full = items[i];
+          const joined = lines.join(' ');
+          if (full.length > joined.length && x.measureText(lines[j] + "…").width <= maxW){
+            lines[j] += "…";
+          }
         }
       }
 
-      const lh = fs*1.1;
+      // rendu lignes centrées
       x.textAlign='center'; x.textBaseline='middle';
+      const lh = fs*1.08;
       for (let k=0;k<lines.length;k++){
         const y = (k - (lines.length-1)/2) * lh;
         x.fillText(lines[k], 0, y);
@@ -189,38 +272,52 @@ Cuisses</textarea>
     // moyeu
     x.beginPath(); x.arc(cx,cy,rin,0,Math.PI*2); x.fillStyle='#fff'; x.fill();
     x.fillStyle='#11131e';
-    x.font=`${Math.max(12,r*0.085)*dpr}px 700 system-ui,Segoe UI,Inter,Roboto`;
+    x.font=`${Math.max(12, r*0.085)*dpr}px 800 -apple-system, Inter, Segoe UI`;
     x.textAlign='center'; x.textBaseline='middle';
-    x.fillText('Massage barrel',cx,cy);
+    x.fillText('Massage barrel', cx, cy);
   }
 
-  function setAngle(deg){angle=deg; c.style.transform=`rotate(${deg}deg)`;}
+  function setAngle(deg){ angle=deg; c.style.transform = `rotate(${deg}deg)`; }
 
   function spin(){
     if(spinning) return; spinning=true; document.getElementById('out').style.display='none';
     const n=items.length, seg=360/n, idx=Math.floor(Math.random()*n), center=idx*seg+seg/2;
-    const turns=5+Math.floor(Math.random()*3), final=turns*360+(360-center), jitter=(Math.random()-0.5)*6;
+    const turns = 5 + Math.floor(Math.random()*3);
+    const final = turns*360 + (360 - center);
+    const jitter=(Math.random()-0.5)*6;
+
     c.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)'; void c.offsetWidth; setAngle(final+jitter);
-    const end=()=>{c.removeEventListener('transitionend',end); c.style.transition='transform .001s linear'; setAngle(final);
-      setTimeout(()=>c.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)',10);
-      const col=colorAt(idx), part=items[idx], isBlue=(col.toLowerCase()===COLORS.bleu.toLowerCase());
-      const out=document.getElementById('out'); out.style.display='block';
-      out.innerHTML=`<b>${isBlue?"Baptistou":"Julitou"}</b> masse <b>${escape(part)}</b> — <span style="padding:2px 8px;border-radius:999px;background:${isBlue?'var(--bleu)':'var(--rose)'};color:#0b0b0f">${isBlue?'Bleu':'Rose'}</span>`;
+
+    const end=()=>{
+      c.removeEventListener('transitionend',end);
+      c.style.transition='transform .001s linear'; setAngle(final);
+      setTimeout(()=> c.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
+
+      const col = colorAt(idx), part = items[idx];
+      const isBlue = col.toLowerCase() === css('--bleu').toLowerCase();
+      const out = document.getElementById('out');
+      out.style.display='block';
+      out.innerHTML = `<b>${isBlue ? "Baptistou" : "Julitou"}</b> masse <b>${escapeHtml(part)}</b> — `
+        + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
+      // petite vibration (iOS la réduit)
+      if (navigator.vibrate) navigator.vibrate(10);
       spinning=false;
-    }; c.addEventListener('transitionend',end);
+    };
+    c.addEventListener('transitionend', end);
   }
 
-  function escape(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function apply(){ items=readItems(); draw(); setAngle(0); document.getElementById('out').style.display='none'; }
 
-  function apply(){items=readItems(); draw(); setAngle(0); document.getElementById('out').style.display='none';}
+  // Événements
+  window.addEventListener('resize', resize, {passive:true});
+  document.getElementById('spin').addEventListener('click', spin);
+  document.getElementById('reset').addEventListener('click', ()=>{ if(!spinning){ setAngle(0); document.getElementById('out').style.display='none'; }});
+  document.getElementById('apply').addEventListener('click', apply);
+  document.getElementById('invert').addEventListener('change', e=>{ invert=e.target.checked; draw(); });
 
-  window.addEventListener('resize',resize,{passive:true});
-  document.getElementById('spin').addEventListener('click',spin);
-  document.getElementById('reset').addEventListener('click',()=>{if(!spinning){setAngle(0); document.getElementById('out').style.display='none';}});
-  document.getElementById('apply').addEventListener('click',apply);
-  document.getElementById('invert').addEventListener('change',e=>{invert=e.target.checked; draw();});
-
-  items=readItems(); resize();
+  // Init
+  items = readItems(); resize();
 })();
 </script>
 </body>
