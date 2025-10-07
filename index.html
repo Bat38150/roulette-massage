@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Massage barrel – Roulette (SVG + NSFW)</title>
 
+<!-- PWA -->
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <meta name="theme-color" content="#0f1220" />
@@ -12,19 +13,26 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
+  /* === Thème global (SFW par défaut) === */
   :root{
-    --rose:#ff5ca8; --bleu:#3fa7ff; --ink:#0b0b0f; --text:#eef2ff; --muted:#9aa3b2;
-    --bg:#0b0f1a; --ring: rgba(255,255,255,.12);
-    --glow1:#1e2746; --glow2:#242a4a;
-    --accent:#ffd166;
-    --segA:#ff5ca8; --segB:#3fa7ff; /* SFW alternance */
-    --nsfwA:#ff2740; --nsfwB:#0e0c10; /* NSFW alternance (rouge / rouge-noir) */
+    --rose:#ff5ca8; --bleu:#3fa7ff;        /* couleurs SFW des segments (rose/bleu) */
+    --text:#eef2ff; --muted:#9aa3b2;       /* texte UI */
+    --bg:#0b0f1a;                          /* fond global */
+    --ring: rgba(255,255,255,.12);         /* bordures subtiles */
+    --glow1:#1e2746; --glow2:#242a4a;      /* halos de fond froids */
+    --accent:#ffd166;                      /* flèche */
+    --segA:#ff5ca8; --segB:#3fa7ff;        /* alternance SFW: A=rose, B=bleu */
+
+    /* NSFW: alternance rouge / rouge très sombre */
+    --nsfwA:#ff2740;
+    --nsfwB:#0e0c10;
   }
-  /* Thème NSFW (rouge/noir intense) */
+
+  /* === Thème visuel NSFW (rouge/noir) === */
   .nsfw-on{
     --bg:#0a0a0d;
     --glow1:#3b0d14;
-    --glow2:#0f0a0e;
+    --glow2:#160b0e;
     --accent:#ff2740;
   }
 
@@ -39,8 +47,19 @@
     padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left);
     transition: background 400ms ease;
   }
+
+  /* Carte principale */
   .wrap{width:min(980px,100%);margin:0 auto;padding:12px}
-  .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--ring);border-radius:18px;padding:clamp(12px,2.8vw,18px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .card{
+    text-align:center;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+    border:1px solid var(--ring);
+    border-radius:18px;
+    padding:clamp(12px,2.8vw,18px);
+    box-shadow:0 10px 30px rgba(0,0,0,.35)
+  }
+
+  /* Titre : dégradé propre, pulsation en NSFW */
   h1{
     margin:0 0 8px; font-weight:900; letter-spacing:.2px; line-height:1.15;
     font-size:clamp(22px,4.8vw,32px);
@@ -50,32 +69,26 @@
   .nsfw-on h1{ animation: pulse 2.6s ease-in-out infinite; }
   @keyframes pulse{ 0%,100%{filter:drop-shadow(0 0 0 rgba(255,39,64,.0))} 50%{filter:drop-shadow(0 0 18px rgba(255,39,64,.32))} }
 
-  .muted{color:var(--muted);font-size:clamp(13px,3.2vw,15px)}
-  .wheel-box{display:grid;place-items:center}
-  .pointer{
-    width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid var(--accent);
-    margin:2px 0 -8px; filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));
-  }
-  svg{width:min(86vw,560px);height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.4));touch-action:manipulation}
+  /* Barre d’actions / boutons */
   .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
   button{
     appearance:none;border:1px solid var(--ring);background:#12162a;color:var(--text);
     border-radius:14px;padding:12px 16px;font-weight:700;font-size:clamp(14px,3.8vw,16px);min-width:120px;cursor:pointer
   }
-  .primary{background:linear-gradient(135deg, var(--bleu), var(--rose)); color:var(--ink); border:none}
+  .primary{background:linear-gradient(135deg, var(--bleu), var(--rose)); color:#0b0b0f; border:none}
   .nsfw-on .primary{ background:linear-gradient(135deg, #ff2740, #b80f2d); color:#0b0b0f; }
 
   .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(12px,3.2vw,14px)}
   .swatch{width:14px;height:14px;border-radius:50%}
-  .result{margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,16px);display:none}
-  .legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+  .muted{color:var(--muted)}
+
   /* Switch iOS NSFW */
   .switch{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 2px}
   .switch .lab{font-weight:700; letter-spacing:.2px}
   .toggle{
-    --w:56px; --h:30px; --r:14px;
+    --w:56px; --h:30px;
     position:relative; width:var(--w); height:var(--h); border-radius:var(--h);
-    background: #2a2f45; border:1px solid var(--ring); cursor:pointer; transition: background .2s ease, border-color .2s ease;
+    background:#2a2f45; border:1px solid var(--ring); cursor:pointer; transition: background .2s ease, border-color .2s ease;
   }
   .toggle::after{
     content:""; position:absolute; top:2px; left:2px; width:26px; height:26px; border-radius:50%;
@@ -84,12 +97,31 @@
   .toggle.on{ background:#ff2740; border-color:#ff2740; }
   .toggle.on::after{ transform: translateX(26px); }
 
-  @media (prefers-reduced-motion:reduce){svg{transition:none}}
+  /* Zone roue + flèche */
+  .wheel-box{display:grid;place-items:center;position:relative}
+  .pointer{
+    width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid var(--accent);
+    margin:2px 0 -8px; filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));
+  }
+
+  /* Le SVG s’adapte ; on ajoute des calques internes (flammes, segments, moyeu) */
+  svg{width:min(86vw,560px);height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.4));touch-action:manipulation}
+
+  /* Résultat + Chrono */
+  .result{margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--ring);font-size:clamp(14px,3.6vw,16px);display:none}
+  .timer{display:none;margin-top:8px;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .timer .display{font-variant-numeric:tabular-nums;font-weight:800;padding:6px 10px;border-radius:10px;border:1px solid var(--ring);background:rgba(255,255,255,.06)}
+  select{background:#12162a;color:var(--text);border:1px solid var(--ring);border-radius:10px;padding:10px 12px}
+
+  /* Animation de flicker NSFW pour les flammes + halo du moyeu */
+  @keyframes flameFlicker { 0%{opacity:.65; transform:scale(1)} 50%{opacity:.9; transform:scale(1.025)} 100%{opacity:.7; transform:scale(1)} }
+  @keyframes hubPulse { 0%,100%{opacity:.5; filter:blur(22px)} 50%{opacity:.85; filter:blur(28px)} }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <section class="card" style="text-align:center">
+    <section class="card">
+      <!-- Titre (pas de sous-texte) -->
       <h1>Massage barrel</h1>
 
       <!-- Switch NSFW -->
@@ -101,44 +133,103 @@
       <div class="wheel-box">
         <div class="pointer" aria-hidden="true"></div>
 
-        <!-- SVG WHEEL -->
+        <!--
+          SVG de la roue :
+          - Calque 1: group "flames" -> flammes douces (visible uniquement en NSFW)
+          - Calque 2: group "wheelGroup" -> segments + textes
+          - Calque 3: group "hub" -> moyeu “coquin” (glow), sans texte
+        -->
         <svg id="wheelSvg" viewBox="-500 -500 1000 1000" aria-label="Roue de massage">
-          <defs id="defs"></defs>
+          <defs id="defs">
+            <!-- Dégradé de flammes (rouge -> orange -> transparent) -->
+            <radialGradient id="flameGrad" cx="50%" cy="50%" r="55%">
+              <stop offset="0%"  stop-color="#ff6a00" stop-opacity="0.85"/>
+              <stop offset="45%" stop-color="#ff2b2b" stop-opacity="0.55"/>
+              <stop offset="85%" stop-color="#000"    stop-opacity="0"/>
+            </radialGradient>
+            <!-- Dégradé du moyeu coquin (sans texte) -->
+            <radialGradient id="hubGrad" cx="50%" cy="50%" r="60%">
+              <stop offset="0%"  stop-color="#ff2740" stop-opacity="0.95"/>
+              <stop offset="65%" stop-color="#7a0f1f" stop-opacity="0.95"/>
+              <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Calque flammes (cercle + “langues” floues) -->
+          <g id="flames" style="display:none">
+            <!-- grand halo “flamme” -->
+            <circle id="flameBase" r="455" fill="url(#flameGrad)" style="animation: flameFlicker 2.2s infinite ease-in-out"></circle>
+            <!-- petites langues (3 ellipses floues) -->
+            <g opacity="0.55" style="animation: flameFlicker 2.8s infinite ease-in-out .2s">
+              <ellipse rx="380" ry="70" transform="rotate(-20)" fill="url(#flameGrad)"></ellipse>
+              <ellipse rx="360" ry="58" transform="rotate(14)"  fill="url(#flameGrad)"></ellipse>
+              <ellipse rx="340" ry="52" transform="rotate(42)"  fill="url(#flameGrad)"></ellipse>
+            </g>
+          </g>
+
+          <!-- Calque roue -->
           <g id="wheelGroup"></g>
 
-          <!-- hub -->
-          <circle r="140" fill="#fff"></circle>
-          <text x="0" y="-6" fill="#11131e" font-weight="800" font-size="64" text-anchor="middle" font-family="-apple-system,Inter,Roboto">Massage</text>
-          <text x="0" y="46" fill="#11131e" font-weight="800" font-size="40" text-anchor="middle" font-family="-apple-system,Inter,Roboto">barrel</text>
+          <!-- Calque hub (moyeu) -->
+          <g id="hub">
+            <!-- disque central avec dégradé rouge/noir + halo (sans texte) -->
+            <circle r="140" fill="url(#hubGrad)"></circle>
+            <!-- halo externe pulsé pour effet “coquin” -->
+            <circle r="170" fill="#ff2740" opacity=".6" style="filter:blur(24px); animation: hubPulse 2.8s infinite ease-in-out"></circle>
+          </g>
         </svg>
 
+        <!-- Boutons -->
         <div class="controls">
           <button id="spin" class="primary">🎡 Lancer</button>
           <button id="reset">↺ Réinitialiser</button>
         </div>
 
-        <!-- Légende : SFW = bleu/rose, NSFW = rouge/rouge-noir -->
-        <div id="legend" class="legend">
-          <span class="chip"><span class="swatch" style="background:var(--bleu)"></span> Bleu&nbsp;: <b>Baptistou</b></span>
-          <span class="chip"><span class="swatch" style="background:var(--rose)"></span> Rose&nbsp;: <b>Julitou</b></span>
+        <!-- Légende (SFW / NSFW) -->
+        <div id="legend" class="controls" style="margin-top:2px">
+          <!-- contenu injecté selon le mode -->
         </div>
 
+        <!-- Résultat -->
         <div id="out" class="result"></div>
+
+        <!-- Chrono -->
+        <div class="timer" id="timerRow">
+          <label class="muted">Durée
+            <select id="dur">
+              <option value="120">2 min</option>
+              <option value="180">3 min</option>
+              <option value="300" selected>5 min</option>
+              <option value="600">10 min</option>
+            </select>
+          </label>
+          <span class="display" id="tdisp">05:00</span>
+          <button id="tstart" class="primary">▶︎ Démarrer</button>
+          <button id="tstop">■ Stop</button>
+          <label class="muted" style="display:flex;gap:6px;align-items:center">
+            <input type="checkbox" id="autoStart" checked> Auto au tirage
+          </label>
+        </div>
       </div>
     </section>
   </div>
 
 <script>
+/* ===========================================================
+   LOGIQUE JS — tout est commenté pour t’aider à modifier
+   =========================================================== */
 (function(){
-  const NAME_BLUE = "Baptistou";
-  const NAME_ROSE = "Julitou";
+  const NAME_BLUE = "Baptistou";  // nom associé au bleu (SFW) / tag (H)
+  const NAME_ROSE = "Julitou";    // nom associé au rose (SFW) / tag (F)
 
-  // SFW : liste fixe (non éditable)
+  /* --- Listes de zones --- */
+  // SFW : liste FIXE (non éditable) — alternance rose/bleu assurée par l’index
   const LIST_SFW = [
     "Épaules","Nuque","Dos","Bras","Mains","Pieds","Jambes","Visage","Tête","Mollets","Cuisses"
   ];
 
-  // NSFW : liste fournie (le suffixe (H)/(F) indique pour qui c’est)
+  // NSFW : 8 éléments (tes 7 + “Jouissance simultanée”)
+  // Suffixes (H)/(F) => receveur imposé ; sans suffixe => receveur aléatoire
   const LIST_NSFW_RAW = [
     "Happy Ending",
     "Lingam(H)",
@@ -146,98 +237,104 @@
     "Levrette",
     "Yoni(H)",
     "Missionnaire",
-    "Anus(H)"
+    "Anus(H)",
+    "Jouissance simultanée"
   ];
 
-  // PWA SW
-  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+  /* --- PWA: Service Worker --- */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+  }
 
-  const svg  = document.getElementById('wheelSvg');
-  const defs = document.getElementById('defs');
-  const group= document.getElementById('wheelGroup');
+  /* --- Raccourcis DOM --- */
+  const svg    = document.getElementById('wheelSvg');
+  const defs   = document.getElementById('defs');
+  const group  = document.getElementById('wheelGroup');
+  const flames = document.getElementById('flames');
+  const hub    = document.getElementById('hub');
   const legend = document.getElementById('legend');
-  const out = document.getElementById('out');
+  const out    = document.getElementById('out');
   const nsfwToggle = document.getElementById('nsfwToggle');
 
-  let nsfw=false, invert=false, spinning=false, angle=0;
-  let items=[]; // objets {label, tag: 'H'|'F'|null}
+  /* --- États --- */
+  let nsfw=false;         // mode NSFW actif ?
+  let spinning=false;     // la roue est-elle en rotation ?
+  let items=[];           // objets {label, tag: 'H'|'F'|null}
 
+  /* --- Chrono --- */
+  let timerId=null, remaining=300;
+  const durSel = document.getElementById('dur');
+  const tdisp  = document.getElementById('tdisp');
+  const tstart = document.getElementById('tstart');
+  const tstop  = document.getElementById('tstop');
+  const timerRow = document.getElementById('timerRow');
+  const autoStart = document.getElementById('autoStart');
+
+  function format(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const ss=(s%60).toString().padStart(2,'0'); return `${m}:${ss}`; }
+  function readDur(){ remaining=parseInt(durSel.value,10)||300; tdisp.textContent=format(remaining); }
+  function tick(){
+    remaining--;
+    if(remaining<=0){
+      tdisp.textContent='00:00';
+      stopTimer();
+      chime();                             // petit "ding"
+      if (navigator.vibrate) navigator.vibrate([20,40,20]); // vibration
+      return;
+    }
+    tdisp.textContent=format(remaining);
+  }
+  function startTimer(){ readDur(); stopTimer(); timerId=setInterval(tick,1000); }
+  function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+  function chime(){           // petit son WebAudio (aucun fichier requis)
+    try{
+      const ctx=new (window.AudioContext||window.webkitAudioContext)();
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=880; g.gain.value=0.0001;
+      o.connect(g); g.connect(ctx.destination); o.start();
+      g.gain.exponentialRampToValueAtTime(0.1, ctx.currentTime+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.35);
+      o.stop(ctx.currentTime+0.4);
+    }catch(e){}
+  }
+
+  /* --- Outils --- */
   function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
-
-  // Parse NSFW tags
-  function parseNSFW(list){
-    return list.map(s=>{
-      const m = s.match(/\((H|F)\)\s*$/i);
-      const tag = m ? m[1].toUpperCase() : null;
-      const label = m ? s.replace(/\((H|F)\)\s*$/i,'').trim() : s.trim();
-      return {label, tag}; // tag=null => both
-    });
-  }
-
-  function loadItems(){
-    if (!nsfw){
-      items = LIST_SFW.map(label => ({label, tag:null}));
-    } else {
-      items = parseNSFW(LIST_NSFW_RAW);
-    }
-  }
-
-  // Color per index depending on mode
-  function colorAt(i){
-    if (!nsfw){
-      // alternance rose/bleu (SFW)
-      return (i%2===0) ? css('--segB') : css('--segA'); // bleu / rose
-    } else {
-      // alternance rouge / rouge-noir (NSFW)
-      return (i%2===0) ? css('--nsfwA') : css('--nsfwB');
-    }
-  }
-
-  // Build SVG wheel
-  function buildWheel(){
-    loadItems();
-    group.innerHTML=''; defs.innerHTML='';
-
-    const n = items.length; const R=480; const Rt=300; const sep='rgba(255,255,255,.2)';
-
-    for(let i=0;i<n;i++){
-      const a0=-Math.PI/2+i*(2*Math.PI/n), a1=-Math.PI/2+(i+1)*(2*Math.PI/n);
-      group.appendChild( el('path',{d:sectorPath(0,0,R,a0,a1), fill:colorAt(i)}) );
-      group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(a0),y2:R*Math.sin(a0),stroke:sep,'stroke-width':2}) );
-
-      const arcId=`arc-${i}`; defs.appendChild( el('path',{id:arcId,d:arcPath(0,0,Rt,a0+0.08,a1-0.08),fill:'none'}) );
-      const txt=el('text',{'font-family':'-apple-system, Inter, Roboto, Arial','fill':'#0b0b0f','font-weight':'700'});
-      const tp =el('textPath',{href:`#${arcId}`,'startOffset':'50%','text-anchor':'middle'}, sanitize(items[i].label));
-      txt.appendChild(tp); group.appendChild(txt);
-      fitTextOnPath(txt,tp,defs.lastChild,22,10);
-    }
-    const aEnd=-Math.PI/2+n*(2*Math.PI/n);
-    group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(aEnd),y2:R*Math.sin(aEnd),stroke:sep,'stroke-width':2}) );
-
-    // Légende
-    if (!nsfw){
-      legend.innerHTML = `
-        <span class="chip"><span class="swatch" style="background:var(--bleu)"></span> Bleu&nbsp;: <b>${NAME_BLUE}</b></span>
-        <span class="chip"><span class="swatch" style="background:var(--rose)"></span> Rose&nbsp;: <b>${NAME_ROSE}</b></span>
-      `;
-    } else {
-      legend.innerHTML = `
-        <span class="chip"><span class="swatch" style="background:var(--nsfwA)"></span> Rouge</span>
-        <span class="chip"><span class="swatch" style="background:var(--nsfwB)"></span> Rouge&nbsp;foncé</span>
-        <span class="chip">Receveur&nbsp;: (H)=<b>${NAME_BLUE}</b>, (F)=<b>${NAME_ROSE}</b>, sinon aléatoire</span>
-      `;
-    }
-  }
-
-  // Helpers SVG
-  function el(name, attrs={}, text){ const e=document.createElementNS('http://www.w3.org/2000/svg', name); for(const k in attrs) e.setAttribute(k, attrs[k]); if(text!=null) e.textContent=text; return e; }
-  function sectorPath(cx,cy,r,a0,a1){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1); const large=(a1-a0)%(2*Math.PI)>Math.PI?1:0; return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`; }
-  function arcPath(cx,cy,r,a0,a1){ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1); const large=(a1-a0)%(2*Math.PI)>Math.PI?1:0; return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`; }
   function arcLength(pathEl){ try{ return pathEl.getTotalLength(); } catch{ return 0; } }
   function sanitize(s){ return s.replace(/[\u0000-\u001F<>]/g,'').trim(); }
-  function fitTextOnPath(textEl, textPathEl, arcEl, maxFs, minFs){
-    const avail = arcLength(arcEl) * 0.9;
-    let fs = maxFs; textEl.setAttribute('font-size', fs);
+  function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+  // Construit un path "secteur de disque" (triangle + arc) pour une tranche
+  function sectorPath(cx,cy,r,a0,a1){
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
+    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    const large=((a1-a0)%(2*Math.PI)>Math.PI)?1:0;
+    return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`;
+  }
+  // Construit un arc (pour porter le texte le long d’une courbe)
+  function arcPath(cx,cy,r,a0,a1){
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
+    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    const large=((a1-a0)%(2*Math.PI)>Math.PI)?1:0;
+    return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;
+  }
+  // Création élément SVG + attributs
+  function el(name, attrs={}, text){
+    const e=document.createElementNS('http://www.w3.org/2000/svg', name);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    if(text!=null) e.textContent=text;
+    return e;
+  }
+
+  // Ajuste la taille du texte le long de l’arc + ellipse si trop long
+  // - En SFW: texte noir #0b0b0f (sur rose/bleu clairs)
+  // - En NSFW: texte blanc #ffffff (lisible sur rouge/rouge-foncé)
+  function fitTextOnPath(textEl, textPathEl, arcEl, opts){
+    const {maxFs, minFs, color} = opts;
+    const avail = arcLength(arcEl) * 0.9; // petite marge
+    let fs = maxFs;
+    textEl.setAttribute('font-size', fs);
+    textEl.setAttribute('fill', color);
+
     const getLen = ()=> textEl.getComputedTextLength ? textEl.getComputedTextLength() : (textEl.textContent.length*fs*0.6);
     while(getLen()>avail && fs>minFs){ fs--; textEl.setAttribute('font-size', fs); }
     if (getLen()>avail){
@@ -246,53 +343,162 @@
     }
   }
 
-  // Spin
-  function setAngle(deg){ angle=deg; svg.style.transform=`rotate(${deg}deg)`; svg.style.transformOrigin='50% 50%'; }
-  function showResultSFW(isBlue, part){
+  // Couleur de tranche par index (alternance SFW ou NSFW)
+  function colorAt(i){
+    if (!nsfw){
+      return (i%2===0) ? css('--segB') : css('--segA'); // bleu / rose
+    } else {
+      return (i%2===0) ? css('--nsfwA') : css('--nsfwB'); // rouge / rouge-foncé
+    }
+  }
+
+  // Conversion de la liste NSFW en objets {label, tag}
+  function parseNSFW(list){
+    return list.map(s=>{
+      const m = s.match(/\((H|F)\)\s*$/i);
+      const tag = m ? m[1].toUpperCase() : null;
+      const label = m ? s.replace(/\((H|F)\)\s*$/i,'').trim() : s.trim();
+      return {label, tag}; // tag=null => receveur aléatoire
+    });
+  }
+
+  // Charge items SFW (fixe) ou NSFW (balises H/F)
+  function loadItems(){
+    if (!nsfw){
+      items = LIST_SFW.map(label => ({label, tag:null}));
+    } else {
+      items = parseNSFW(LIST_NSFW_RAW);
+    }
+  }
+
+  // Construit toute la roue (segments + textes courbes)
+  function buildWheel(){
+    loadItems();
+    group.innerHTML=''; // reset
+    // Affiche/masque les flammes selon le mode
+    flames.style.display = nsfw ? 'block' : 'none';
+
+    const n = items.length;
+    const R  = 480; // rayon externe
+    const Rt = 300; // rayon pour le texte
+    const sep='rgba(255,255,255,.2)'; // séparateurs
+
+    for(let i=0;i<n;i++){
+      const a0 = -Math.PI/2 + i*(2*Math.PI/n);
+      const a1 = -Math.PI/2 + (i+1)*(2*Math.PI/n);
+
+      // 1) Tranche colorée
+      group.appendChild( el('path',{ d:sectorPath(0,0,R,a0,a1), fill:colorAt(i) }) );
+
+      // 2) Séparateur (du centre au bord)
+      group.appendChild( el('line',{
+        x1:0,y1:0, x2:R*Math.cos(a0), y2:R*Math.sin(a0),
+        stroke:sep, 'stroke-width':2
+      }) );
+
+      // 3) Arc porteur du texte
+      const arcId = `arc-${i}`;
+      const arc   = el('path',{ id:arcId, d:arcPath(0,0,Rt,a0+0.08, a1-0.08), fill:'none' });
+      defs.appendChild(arc);
+
+      // 4) Texte le long de l’arc (taille + couleur diff. en NSFW)
+      const txt = el('text', {
+        'font-family':'-apple-system, Inter, Roboto, Arial',
+        'font-weight':'800'  // plus gras pour la lisibilité
+      });
+      const tp  = el('textPath', { href:`#${arcId}`, 'startOffset':'50%', 'text-anchor':'middle' }, sanitize(items[i].label));
+      txt.appendChild(tp); group.appendChild(txt);
+
+      fitTextOnPath(txt, tp, arc, {
+        maxFs: nsfw ? 28 : 22,           // NSFW: un peu plus grand
+        minFs: 11,                       // plus lisible sur iPhone
+        color: nsfw ? '#ffffff' : '#0b0b0f' // NSFW: texte blanc ; SFW: texte noir
+      });
+    }
+
+    // Dernier séparateur pour “fermer” la roue
+    const aEnd = -Math.PI/2 + n*(2*Math.PI/n);
+    group.appendChild( el('line',{x1:0,y1:0,x2:R*Math.cos(aEnd),y2:R*Math.sin(aEnd),stroke:sep,'stroke-width':2}) );
+
+    // Légende : SFW = qui masse selon la couleur ; NSFW = palette seulement
+    if (!nsfw){
+      legend.innerHTML =
+        `<span class="chip"><span class="swatch" style="background:var(--bleu)"></span> Bleu&nbsp;: <b>${NAME_BLUE}</b></span>
+         <span class="chip"><span class="swatch" style="background:var(--rose)"></span> Rose&nbsp;: <b>${NAME_ROSE}</b></span>`;
+    } else {
+      legend.innerHTML =
+        `<span class="chip"><span class="swatch" style="background:var(--nsfwA)"></span> Rouge</span>
+         <span class="chip"><span class="swatch" style="background:var(--nsfwB)"></span> Rouge&nbsp;foncé</span>`;
+    }
+  }
+
+  /* --- Rotation + résultat --- */
+  function setAngle(deg){ svg.style.transform=`rotate(${deg}deg)`; svg.style.transformOrigin='50% 50%'; }
+
+  // Affichage SFW : la couleur (rose/bleu) détermine qui masse
+  function showResultSFW(idx){
+    const col = colorAt(idx);
+    const isBlue = col.toLowerCase() === getComputedStyle(document.documentElement).getPropertyValue('--segB').trim().toLowerCase();
+    const part = items[idx].label;
     out.style.display='block';
     out.innerHTML = `<b>${isBlue ? NAME_BLUE : NAME_ROSE}</b> masse <b>${escapeHtml(part)}</b> — `
       + `<span class="chip"><span class="swatch" style="background:${isBlue?'var(--bleu)':'var(--rose)'}"></span>${isBlue?'Bleu':'Rose'}</span>`;
   }
-  function showResultNSFW(item){
-    // Receveur selon tag
+
+  // Affichage NSFW : le tag (H/F) impose le receveur ; sinon tirage aléatoire
+  // (La légende explicative a été retirée, comme demandé.)
+  function showResultNSFW(idx){
+    const it = items[idx];
     let receiver = null;
-    if (item.tag === 'H') receiver = NAME_BLUE;
-    else if (item.tag === 'F') receiver = NAME_ROSE;
+    if (it.tag === 'H') receiver = NAME_BLUE;
+    else if (it.tag === 'F') receiver = NAME_ROSE;
     else receiver = Math.random() < 0.5 ? NAME_BLUE : NAME_ROSE;
 
     out.style.display='block';
-    out.innerHTML = `🎲 <b>${escapeHtml(item.label)}</b> — Pour&nbsp;<b>${receiver}</b>`;
+    out.innerHTML = `🎲 <b>${escapeHtml(it.label)}</b> — Pour&nbsp;<b>${receiver}</b>`;
   }
-  function hideResult(){ out.style.display='none'; }
 
+  // Lance la rotation et calcule l’index final visé par la flèche
   function spin(){
-    if(spinning) return; spinning=true; hideResult();
-    const n=items.length, seg=360/n, idx=Math.floor(Math.random()*n), center=idx*seg+seg/2;
-    const turns=5+Math.floor(Math.random()*3), final=turns*360+(360-center), jitter=(Math.random()-0.5)*6;
+    if(spinning) return; spinning=true; out.style.display='none';
 
-    svg.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)'; void svg.offsetWidth; setAngle(final+jitter);
+    // remet le chrono au besoin
+    timerRow.style.display = 'flex';
+
+    const n = items.length;
+    const seg = 360/n;
+    const idx = Math.floor(Math.random()*n);             // index tiré
+    const center = idx*seg + seg/2;                      // centre du segment
+    const turns = 5 + Math.floor(Math.random()*3);       // nombre de tours
+    const final = turns*360 + (360 - center);            // vise la flèche haut
+    const jitter = (Math.random()-0.5)*6;                // petite imprécision
+
+    svg.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)';
+    void svg.offsetWidth;                                // “flush” layout
+    setAngle(final + jitter);
+
     const end=()=>{
       svg.removeEventListener('transitionend',end);
-      svg.style.transition='transform .001s linear'; setAngle(final);
+      svg.style.transition='transform .001s linear';
+      setAngle(final);                                   // fixe pile au centre
       setTimeout(()=> svg.style.transition='transform 5.2s cubic-bezier(.12,.65,.06,1)', 10);
 
-      if (!nsfw){
-        // SFW : couleur -> qui masse
-        const col = colorAt(idx);
-        const isBlue = col.toLowerCase() === css('--segB').toLowerCase();
-        showResultSFW(isBlue, items[idx].label);
-      } else {
-        // NSFW : tag -> receveur
-        showResultNSFW(items[idx]);
-      }
+      // Affichage du résultat selon le mode
+      if (!nsfw) showResultSFW(idx);
+      else       showResultNSFW(idx);
 
+      // petit retour haptique
       if (navigator.vibrate) navigator.vibrate(10);
+
+      // chrono auto si coché
+      if (autoStart.checked){ startTimer(); }
+
       spinning=false;
     };
     svg.addEventListener('transitionend', end);
   }
 
-  // NSFW toggle (thème + contenu)
+  /* --- Bascule NSFW --- */
   function setNSFW(on){
     nsfw = !!on;
     document.body.classList.toggle('nsfw-on', nsfw);
@@ -300,19 +506,22 @@
     nsfwToggle.setAttribute('aria-checked', nsfw ? 'true' : 'false');
     buildWheel();
     setAngle(0);
-    hideResult();
+    out.style.display='none';
   }
 
-  // Events
+  /* --- Événements UI --- */
   document.getElementById('spin').addEventListener('click', spin);
-  document.getElementById('reset').addEventListener('click', ()=>{ setAngle(0); hideResult(); });
+  document.getElementById('reset').addEventListener('click', ()=>{ setAngle(0); out.style.display='none'; stopTimer(); });
   nsfwToggle.addEventListener('click', ()=> setNSFW(!nsfw));
   nsfwToggle.addEventListener('keydown', (e)=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); setNSFW(!nsfw); } });
 
-  function escapeHtml(s){return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  document.getElementById('dur').addEventListener('change', readDur);
+  document.getElementById('tstart').addEventListener('click', startTimer);
+  document.getElementById('tstop').addEventListener('click', stopTimer);
 
-  // Init
-  setNSFW(false); // démarre en mode Safe
+  /* --- Initialisation --- */
+  setNSFW(false);   // démarre en SFW
+  readDur();        // prépare l’affichage du chrono
 })();
 </script>
 </body>
